@@ -9,26 +9,26 @@ app.use(express.json());
 // player rating logic
 app.post("/rating", async (req, res) => {
   try {
-    const { username, server_name } = req.body;
+    const { original_username, server_name } = req.body;
 
+    console.log(original_username);
     // Check if player in the specified server exists
     const playerCheck = await pool.query(
-        "SELECT * FROM player WHERE username = $1 AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-        [username, server_name]
+        "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+        [original_username, server_name]
     );
     // Create a new player if no player exists
     if (playerCheck.rows.length === 0) {
         const newPlayer = await pool.query(
-            "INSERT INTO player (username, server_id) VALUES($1, (SELECT server_id FROM server WHERE server_name = $2)) RETURNING player_id",
-            [username, server_name]
-        );
+        "INSERT INTO player (original_username, lower_username, server_id) VALUES($1, LOWER($2), (SELECT server_id FROM server WHERE server_name = $3)) RETURNING player_id",
+        [original_username, original_username, server_name]
+      );
         // Extract player_id from the result
         player_id = newPlayer.rows[0].player_id;
     } else {
         // Player already exists, get player_id from the check result
         player_id = playerCheck.rows[0].player_id;
     }
-
     const {
         creep_score,
         map_awareness_score,
@@ -58,7 +58,7 @@ app.post("/rating", async (req, res) => {
           laning_score,
           carry_score,
           shot_calling_score,
-          play_again // This assumes playAgain is now an integer (0 or 1)
+          play_again
       ]
     );
 
@@ -79,18 +79,22 @@ app.get("/search", async (req, res) => {
     try {
       console.log("Search route hit");
   
-      const { username, server_name } = req.query;
-      console.log("Searching for player:", username, server_name);
+      const { original_username, server_name } = req.query;
   
       // Note: You should adjust the SQL query to match your database schema
       const searchPlayer = await pool.query(
-      "SELECT * FROM player WHERE username = $1 AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-        [username, server_name]
+      "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+        [original_username, server_name]
       );
   
       if (searchPlayer.rows.length > 0) {
         // If a player is found, respond with the player details
-        res.json(searchPlayer.rows[0]);
+        const playerFound = await pool.query(
+          "SELECT original_username FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+          [original_username, server_name]
+        )
+        console.log(playerFound.rows[0])
+        res.json(playerFound.rows[0]);
       } else {
         // If no player is found, respond with an appropriate message
         res.status(404).json({ message: "Player not found" });
@@ -99,7 +103,7 @@ app.get("/search", async (req, res) => {
       console.error(err.message);
       res.status(500).json({ message: "Internal Server Error" });
     }
-});  
+});
 
 app.get("/servers", async (req, res) => {
     try {
@@ -112,12 +116,12 @@ app.get("/servers", async (req, res) => {
 
 app.post("/api/update-averages", async (req, res) => {
   try {
-    const { username, server_name } = req.body;
+    const { original_username, server_name } = req.body;
 
     // Locate player id
     const playerResult = await pool.query(
-      "SELECT player_id FROM player WHERE username = $1 AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-      [username, server_name]
+      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+      [original_username, server_name]
     );
     const player_id = playerResult.rows[0]?.player_id;
 
@@ -205,11 +209,11 @@ app.post("/api/update-averages", async (req, res) => {
 
 app.get("/api/collect-averages", async (req, res) => {
   try {
-    const { username, server_name } = req.query;
+    const { original_username, server_name } = req.query;
 
     const player_id_result = await pool.query(
-      "SELECT player_id FROM player WHERE username = $1 AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-      [username, server_name]
+      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+      [original_username, server_name]
     );
     const player_id = player_id_result.rows[0]?.player_id;
 
