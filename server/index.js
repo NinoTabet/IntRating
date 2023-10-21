@@ -11,7 +11,6 @@ app.post("/rating", async (req, res) => {
   try {
     const { original_username, server_name } = req.body;
 
-    console.log(original_username);
     // Check if player in the specified server exists
     const playerCheck = await pool.query(
         "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
@@ -23,6 +22,7 @@ app.post("/rating", async (req, res) => {
         "INSERT INTO player (original_username, lower_username, server_id) VALUES($1, LOWER($2), (SELECT server_id FROM server WHERE server_name = $3)) RETURNING player_id",
         [original_username, original_username, server_name]
       );
+
         // Extract player_id from the result
         player_id = newPlayer.rows[0].player_id;
     } else {
@@ -105,6 +105,7 @@ app.get("/search", async (req, res) => {
     }
 });
 
+//gets all server names
 app.get("/servers", async (req, res) => {
     try {
       const servers = await pool.query("SELECT server_name FROM server");
@@ -114,6 +115,7 @@ app.get("/servers", async (req, res) => {
     }
 });
 
+// updates avg scores
 app.post("/api/update-averages", async (req, res) => {
   try {
     const { original_username, server_name } = req.body;
@@ -156,7 +158,7 @@ app.post("/api/update-averages", async (req, res) => {
     if (existingEntry.rows.length === 0) {
       // If there is no existing entry, perform an INSERT
       await pool.query(
-        "INSERT INTO average_ratings (player_id, creep_score_avg, map_awareness_score_avg, team_fighting_score_avg, feeding_score_avg, toxicity_score_avg, tilt_score_avg, kindness_score_avg, laning_score_avg, carry_score_avg, shot_calling_score_avg, play_again_avg, last_click_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())",
+        "INSERT INTO average_ratings (player_id, creep_score_avg, map_awareness_score_avg, team_fighting_score_avg, feeding_score_avg, toxicity_score_avg, tilt_score_avg, kindness_score_avg, laning_score_avg, carry_score_avg, shot_calling_score_avg, play_again_avg, overall_avg, last_click_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, (SELECT AVG((creep_score_avg + map_awareness_score_avg + team_fighting_score_avg + feeding_score_avg + toxicity_score_avg + tilt_score_avg + kindness_score_avg + laning_score_avg + carry_score_avg + shot_calling_score_avg + play_again_avg) / 11) AS overall_avg FROM average_ratings WHERE player_id = $1), NOW())",
         [
           player_id,
           averageScores.creep_score,
@@ -175,7 +177,7 @@ app.post("/api/update-averages", async (req, res) => {
     } else {
       // If there is an existing entry, perform an UPDATE
       await pool.query(
-        "UPDATE average_ratings SET creep_score_avg = $1, map_awareness_score_avg = $2, team_fighting_score_avg = $3, feeding_score_avg = $4, toxicity_score_avg = $5, tilt_score_avg = $6, kindness_score_avg = $7, laning_score_avg = $8, carry_score_avg = $9, shot_calling_score_avg = $10, play_again_avg = $11, last_click_timestamp = NOW() WHERE player_id = $12",
+        "UPDATE average_ratings SET creep_score_avg = $1, map_awareness_score_avg = $2, team_fighting_score_avg = $3, feeding_score_avg = $4, toxicity_score_avg = $5, tilt_score_avg = $6, kindness_score_avg = $7, laning_score_avg = $8, carry_score_avg = $9, shot_calling_score_avg = $10, play_again_avg = $11, last_click_timestamp = NOW(), overall_avg =(SELECT AVG((creep_score_avg + map_awareness_score_avg + team_fighting_score_avg + feeding_score_avg + toxicity_score_avg + tilt_score_avg + kindness_score_avg + laning_score_avg + carry_score_avg + shot_calling_score_avg + play_again_avg) / 11) AS overall_avg FROM average_ratings WHERE player_id = $12) WHERE player_id = $12",
         [
           averageScores.creep_score,
           averageScores.map_awareness_score,
@@ -207,6 +209,7 @@ app.post("/api/update-averages", async (req, res) => {
   }
 });
 
+// pulls avg scores and total # of ratings of specified user
 app.get("/api/collect-averages", async (req, res) => {
   try {
     const { original_username, server_name } = req.query;
@@ -222,7 +225,17 @@ app.get("/api/collect-averages", async (req, res) => {
       [player_id]
     );
 
-    res.json(updated_player_averages.rows[0]);
+    const total_number_of_ratings = await pool.query(
+      "SELECT COUNT(*) FROM ratings WHERE player_id = $1",
+      [player_id]
+    );
+    
+    const responseData = {
+      total_number_of_ratings: total_number_of_ratings.rows[0],
+      updated_player_averages: updated_player_averages.rows[0],
+    };
+
+    res.json(responseData);
 
   } catch (error) {
     console.error('Error collecting averages:', error.message);
