@@ -243,6 +243,21 @@ app.get("/api/collect-averages", async (req, res) => {
   }
 });
 
+app.post("/feedback", async (req, res) => {
+try {
+  const {feedback} = req.body;
+  const feedbackValue = feedback.trim() === "" ? null : feedback;
+  const submit_feedabck =  await pool.query(
+    "INSERT INTO feedback (feedback) VALUES ($1)",
+    [feedbackValue]
+);
+
+} catch (error) {
+  alert('An error occured while trying to submit your feedback. Please try again.');
+  res.status(500).send('Internal Server Error');
+}
+
+});
 // server starter
 app.listen(3000, () => {
     console.log("Server has started on port 3000");
