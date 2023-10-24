@@ -9,7 +9,7 @@ const ServerListNames = ({ selectedServer, setSelectedServer }) => {
   useEffect(() => {
     const fetchDataOnLoad = async () => {
       try {
-        const response = await fetch(apiUrl + "servers", {
+        const response = await fetch(apiUrl + "/servers", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
