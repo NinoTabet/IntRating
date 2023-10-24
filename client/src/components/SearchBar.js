@@ -2,12 +2,11 @@
 import React, { useState } from "react";
 import ServerListNames from "./ServerListNames";
 
-const apiUrl = process.env.REACT_APP_API_URL.replace(/\/$/, ''); ;
+const apiUrl = process.env.REACT_APP_API_URL.replace(/\/$/, '');
 
 const SearchBar = ({ handleSearchSuccess }) => {
   const [ original_username, setOriginal_username ] = useState("");
   const [selectedServer, setSelectedServer] = useState("Server");
-  console.log('Constructed URL for /search:'+apiUrl);
   const onSubmitForm = async (e) => {
     e.preventDefault();
 

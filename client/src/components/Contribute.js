@@ -54,12 +54,12 @@ const Contribute = ({handleSearchSuccess}) => {
         }
         try {
             const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again: play_again === 'yes' ? 10 : play_again === 'no' ? 0 : null}
-            const post_response = await fetch(apiUrl + "rating", {
+            const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
-            const url = apiUrl + `search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
+            const url = apiUrl + `/search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
             const get_response = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
