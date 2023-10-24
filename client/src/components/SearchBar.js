@@ -7,7 +7,7 @@ const apiUrl = process.env.REACT_APP_API_URL.replace(/\/$/, ''); ;
 const SearchBar = ({ handleSearchSuccess }) => {
   const [ original_username, setOriginal_username ] = useState("");
   const [selectedServer, setSelectedServer] = useState("Server");
-
+  console.log('Constructed URL for /search:'+apiUrl);
   const onSubmitForm = async (e) => {
     e.preventDefault();
 
@@ -17,7 +17,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      console.log('Constructed URL for /search:'+url);
+      
 
       if (response.ok) {
         const data = await response.json();
