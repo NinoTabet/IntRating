@@ -17,6 +17,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
+      console.log('Constructed URL for /search:'+url);
 
       if (response.ok) {
         const data = await response.json();
