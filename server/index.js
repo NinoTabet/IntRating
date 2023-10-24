@@ -244,19 +244,18 @@ app.get("/api/collect-averages", async (req, res) => {
 });
 
 app.post("/feedback", async (req, res) => {
-try {
-  const {feedback} = req.body;
-  const feedbackValue = feedback.trim() === "" ? null : feedback;
-  const submit_feedabck =  await pool.query(
-    "INSERT INTO feedback (feedback) VALUES ($1)",
-    [feedbackValue]
-);
-
-} catch (error) {
-  alert('An error occured while trying to submit your feedback. Please try again.');
-  res.status(500).send('Internal Server Error');
+  try {
+    const {feedback} = req.body;
+    const feedbackValue = feedback.trim() === "" ? null : feedback;
+    await pool.query(
+      "INSERT INTO feedback (feedback) VALUES ($1)",
+      [feedbackValue]
+  );
+  alert('Thank you for your feedback! Your feedback has been shared with the developer.');
+  } catch (error) {
+    alert('An error occured while trying to submit your feedback. Please try again.');
+    res.status(500).send('Internal Server Error');
 }
-
 });
 // server starter
 const port = process.env.PORT || 3000;
