@@ -59,7 +59,7 @@ const Contribute = ({handleSearchSuccess}) => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
-            const url = apiUrl + `search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
+            const url = apiUrl + `/search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
             const get_response = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
