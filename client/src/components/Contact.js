@@ -1,4 +1,4 @@
-import "../../src/Main.css";
+import "../Main.css";
 import React, { useState } from 'react';
 
 const apiUrl = process.env.REACT_APP_API_URL;

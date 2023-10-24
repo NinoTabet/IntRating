@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import SearchBar from "./SearchBar";
-import "../../src/Main.css";
+import "../Main.css";
 
 const Home = ({ handleContributeClick, handleSearchSuccess }) => {
   return (
