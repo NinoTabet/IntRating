@@ -1,0 +1,9 @@
+.middle_page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+nav{
+  background-color: #040D12;
+}
