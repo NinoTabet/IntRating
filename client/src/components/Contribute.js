@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ServerListNames from './ServerListNames';
-import DisplayPlayer from './DisplayPlayer';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -24,8 +23,6 @@ const Contribute = ({handleSearchSuccess}) => {
     // server selector used for locating specified player
     const [ selectedServer, setSelectedServer ] = useState(null);
 
-    // used to change component upon form successful completion
-    const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
     // saves player data
     const [playerData, setPlayerData] = useState({});
@@ -114,7 +111,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={creep_score} onChange={e => setCreep_score(e.target.value)}
                             />
@@ -127,7 +124,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={map_awareness_score} onChange={e => setMap_awareness_score(e.target.value)}
                             />
@@ -140,7 +137,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={team_fighting_score} onChange={e => setTeam_fighting_score(e.target.value)}
                             />
@@ -156,7 +153,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={feeding_score} onChange={e => setFeeding_score(e.target.value)}
                             />
@@ -169,7 +166,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={toxicity_score} onChange={e => setToxicity_score(e.target.value)}
                             />
@@ -182,7 +179,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={tilt_score} onChange={e => setTilt_score(e.target.value)}
                             />
@@ -198,7 +195,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={kindness_score} onChange={e => setKindness_score(e.target.value)}
                             />
@@ -211,7 +208,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={laning_score} onChange={e => setLaning_score(e.target.value)}
                             />
@@ -224,7 +221,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={carry_score} onChange={e => setCarry_score(e.target.value)}
                             />
@@ -240,7 +237,7 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            min="0"
+                            min="1"
                             max="10"
                             value={shot_calling_score} onChange={e => setShot_calling_score(e.target.value)}
                             />
