@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import ServerListNames from "./ServerListNames";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = process.env.REACT_APP_API_URL.replace(/\/$/, ''); ;
 
 const SearchBar = ({ handleSearchSuccess }) => {
   const [ original_username, setOriginal_username ] = useState("");
@@ -12,7 +12,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
     e.preventDefault();
 
     try {
-      const url = apiUrl + `search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
+      const url = apiUrl + `/search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
       const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
