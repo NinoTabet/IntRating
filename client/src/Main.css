@@ -7,3 +7,10 @@
 nav{
   background-color: #040D12;
 }
+
+.with-border {
+  border-right: 1px solid #ccc; /* Adjust the color as needed */
+}
+.nav-hover-effect:hover {
+  background-color: #ebeced; /* Change this to the desired hover color */
+}

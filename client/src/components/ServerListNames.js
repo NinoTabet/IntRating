@@ -13,13 +13,9 @@ const ServerListNames = ({ selectedServer, setSelectedServer }) => {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-
         if (response.ok) {
           const data = await response.json();
-          console.log('Data fetched on page load:', data);
           setServerList(data);
-        } else {
-          console.error('Failed to fetch data on page load:', response.statusText);
         }
       } catch (error) {
         console.error('Error:', error.message);

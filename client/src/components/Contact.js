@@ -15,10 +15,20 @@ const Contact = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            setFeedback("");
+            const responseData = await response.json();
+            alert(responseData.message);
+
         } catch (err) {
             console.error("Error:", err.message);
+            alert('An error occurred while trying to submit your feedback. Please try again.');
         }
-    };
+    };   
 
     return (
         <div className="container mt-lg-5 middle_page w-50">
@@ -41,7 +51,7 @@ const Contact = () => {
                     </div>
                     <div className="row justify-content-center mt-5">
                         <div className="col-md-6 text-center">
-                            <button className="btn btn-dark text-light btn-lg">Submit</button>
+                            <button className="btn btn-dark text-light btn-lg" type="submit">Submit</button>
                         </div>
                     </div>
                 </form>

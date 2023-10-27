@@ -42,7 +42,13 @@ app.post("/rating", async (req, res) => {
         shot_calling_score,
         play_again,
     } = req.body;
-
+    
+    if (
+      [creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score].some(score => score < 0 || score > 10)
+    ) {
+      return res.status(400).json({ message: "All scores must be between 0 and 10." });
+    }
+    
     // Input into the ratings table with the request info
     const rating = await pool.query(
       "INSERT INTO ratings (player_id, creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
@@ -66,11 +72,11 @@ app.post("/rating", async (req, res) => {
       if (rating.rows.length > 0) {
           res.json(rating.rows[0]);
       } else {
-          res.status(500).send("Failed to insert rating");
+          res.status(500).json("Failed to insert rating");
       }
   } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Internal Server Error");
+    console.error(err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -96,7 +102,6 @@ app.get("/search", async (req, res) => {
         console.log(playerFound.rows[0])
         res.json(playerFound.rows[0]);
       } else {
-        // If no player is found, respond with an appropriate message
         res.status(404).json({ message: "Player not found" });
       }
     } catch (err) {
@@ -254,15 +259,28 @@ app.post("/feedback", async (req, res) => {
       "INSERT INTO feedback (feedback) VALUES ($1)",
       [feedbackValue]
   );
-  alert('Thank you for your feedback! Your feedback has been shared with the developer.');
+  res.status(200).json({ message: 'Thanks for the feedback! It has successfully been submitted to the developer.' });
   } catch (error) {
-    alert('An error occured while trying to submit your feedback. Please try again.');
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
 }
 });
-// server starter
-const port = process.env.PORT || 3000;
 
+app.get("/total_ratings", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT MAX(rating_id) as latestRatingId FROM ratings"
+    );
+
+    const latestRatingId = result.rows[0].latestratingid; // Updated this line
+    res.json({ latestRatingId });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server has started on port ${port}`);
 });

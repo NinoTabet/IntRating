@@ -16,11 +16,12 @@ const SearchBar = ({ handleSearchSuccess }) => {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      
 
       if (response.ok) {
         const data = await response.json();
         handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, playerData: data });
+      }else{
+        alert('Player not found in databse. Be the first to rate '+original_username+'!');
       }
     } catch (err) {
       console.error("Error:", err.message);
