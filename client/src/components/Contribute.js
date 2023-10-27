@@ -113,7 +113,8 @@ const Contribute = ({handleSearchSuccess}) => {
                             type="number"
                             className="form-control text-center"
                             placeholder="Enter a rating on 10"
-                            
+                            min="0"
+                            max="10"
                             value={creep_score} onChange={e => setCreep_score(e.target.value)}
                             />
                         </div>
