@@ -265,7 +265,7 @@ const Contribute = ({handleSearchSuccess}) => {
                         type="submit"
                         className="btn btn-dark text-light btn-lg mt-2"
                     >
-                        Contribute
+                        Contribute rating
                     </button>
                     </div>
                 </div>
