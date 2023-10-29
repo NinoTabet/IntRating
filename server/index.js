@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -276,7 +277,7 @@ app.get("/total_ratings", async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" }); 
   }
 });
 
