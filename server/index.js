@@ -4,14 +4,7 @@ const cors = require("cors");
 const app = express();
 const pool = require("./db");
 
-const corsOptions = {
-  origin: 'https://www.intrating.net', 
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, 
-};
-
-app.use(cors(corsOptions));
-
+app.use(cors());
 app.use(express.json());
 
 // player rating logic
