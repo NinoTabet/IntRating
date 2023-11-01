@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../DisplayPlayer.css"
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -79,7 +80,7 @@ const DisplayPlayer = (props) => {
                 <h5 className="mb-3">{server_name}</h5>
                 <div>
                     <h6>Number of ratings for this player: <span> {updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></h6>
-                    <button onClick={updateAndFetchData} className="mt-3">
+                    <button onClick={updateAndFetchData} className="mt-3 btn-pill">
                     Update
                     </button>
                      <p className="mt-3">Last updated: <span>{updatedData ? `${updatedData.updated_player_averages.last_click_timestamp}` : `Loading...`}</span></p> 
@@ -158,6 +159,16 @@ const DisplayPlayer = (props) => {
                         <div className="form-group text-center">
                             <label className="mb-2">Play again?</label>
                             <p>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 10` : 'Loading...'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="row justify-content-center mt-5">
+                    <div className="col-5">
+                        <div className="form-group overflow-auto review-border">
+                            <section className="background-color: #181818; review_section ">
+                                <div className="container py-3 px-2">
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </div>

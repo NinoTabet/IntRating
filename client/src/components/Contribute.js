@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ServerListNames from './ServerListNames';
+import ContributionStars from './ContributionStars';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -50,7 +51,7 @@ const Contribute = ({handleSearchSuccess}) => {
             return;
         }
         try {
-            const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again: play_again === 'yes' ? 10 : play_again === 'no' ? 0 : null}
+            const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
             const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -74,7 +75,7 @@ const Contribute = ({handleSearchSuccess}) => {
         }
     };
   
-      return (
+    return (
         <div className="text-center">
         <h1 className="text-center mb-3">CONTRIBUTE RATING</h1>
         <form onSubmit={onSubmitForm}>
@@ -86,12 +87,12 @@ const Contribute = ({handleSearchSuccess}) => {
                     selectedServer={selectedServer}
                     setSelectedServer={setSelectedServer}
                     className="form-control text-center"
-                    />
+                   />
                 </div>
                 </div>
             </div>
             <div className="row justify-content-center mb-3">
-                <div className="col-md-6">
+                <div className="col-2">
                 <div className="form-group text-center">
                     <label htmlFor="playerName">Player Name</label>
                     <input
@@ -109,40 +110,20 @@ const Contribute = ({handleSearchSuccess}) => {
                     <div className="col-2">
                         <div className="form-group text-center">
                             <label>Cs'ing</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={creep_score} onChange={e => setCreep_score(e.target.value)}
-                            />
+                            <ContributionStars value={creep_score} onChange={(value) => setCreep_score(value)} attributeType="csing" />
+
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Map Awareness</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={map_awareness_score} onChange={e => setMap_awareness_score(e.target.value)}
-                            />
+                            <ContributionStars value={map_awareness_score} onChange={(value) => setMap_awareness_score(value)} attributeType="MapAwareness"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Team Fighting</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={team_fighting_score} onChange={e => setTeam_fighting_score(e.target.value)}
-                            />
+                            <ContributionStars value={team_fighting_score} onChange={(value) => setTeam_fighting_score(value)} attributeType="TeamFighting"/>
                         </div>
                         </div>
                 </div>
@@ -151,40 +132,19 @@ const Contribute = ({handleSearchSuccess}) => {
                     <div className="col-2">
                         <div className="form-group text-center">
                             <label>Intentional Feeding</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={feeding_score} onChange={e => setFeeding_score(e.target.value)}
-                            />
+                            <ContributionStars value={feeding_score} onChange={(value) => setFeeding_score(value)} attributeType="IntentionalFeeding"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Toxicity</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={toxicity_score} onChange={e => setToxicity_score(e.target.value)}
-                            />
+                            <ContributionStars value={toxicity_score} onChange={(value) => setToxicity_score(value)} attributeType="Toxicity"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Tiltability</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={tilt_score} onChange={e => setTilt_score(e.target.value)}
-                            />
+                            <label>Tiltability</label> 
+                            <ContributionStars value={tilt_score} onChange={(value) => setTilt_score(value)} attributeType="Tiltability"/>
                         </div>
                         </div>
                 </div>
@@ -193,40 +153,19 @@ const Contribute = ({handleSearchSuccess}) => {
                     <div className="col-2">
                         <div className="form-group text-center">
                             <label>Kindness</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={kindness_score} onChange={e => setKindness_score(e.target.value)}
-                            />
+                            <ContributionStars value={kindness_score} onChange={(value) => setKindness_score(value)} attributeType="Kindness"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Laning / Jungling</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={laning_score} onChange={e => setLaning_score(e.target.value)}
-                            />
+                            <ContributionStars value={laning_score} onChange={(value) => setLaning_score(value)} attributeType="Laning/Jungling"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Carry-ability</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={carry_score} onChange={e => setCarry_score(e.target.value)}
-                            />
+                            <ContributionStars value={carry_score} onChange={(value) => setCarry_score(value)} attributeType="CarryAbility"/>
                         </div>
                         </div>
                 {/* this is one line */}
@@ -235,27 +174,28 @@ const Contribute = ({handleSearchSuccess}) => {
                         <div className="col-2">
                         <div className="form-group text-center">
                             <label>Shot calling</label>
-                            <input
-                            type="number"
-                            className="form-control text-center"
-                            placeholder="Enter a rating on 10"
-                            min="0"
-                            max="10"
-                            value={shot_calling_score} onChange={e => setShot_calling_score(e.target.value)}
-                            />
+                            <ContributionStars value={shot_calling_score} onChange={(value) => setShot_calling_score(value)} attributeType="ShotCalling"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                </div>
+                <div className="row justify-content-center mb-3">
+                    <div className="col-1">
                         <div className="form-group text-center">
                             <label>Play again?</label>
-                            <select
-                        className="form-control text-center"
-                        value={play_again} onChange={e => setPlay_again(e.target.value)}
-                        >
-                            <option value="select" disabled>Select an option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
+
+                            <select className="form-control" value={play_again} onChange={(e) => setPlay_again(e.target.value)}>
+                                <option value="select" disabled>Select an option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div className="row justify-content-center mb-3">
+                    <div className="col-4">
+                        <div className="form-group">
+                        <label className="text-center">Write a review</label>
+                        <textarea className="form-control text-center" rows="3" placeholder="Enter your review"></textarea>
                         </div>
                     </div>
                 </div>
@@ -272,7 +212,7 @@ const Contribute = ({handleSearchSuccess}) => {
             </div>
         </form>
         </div>
-  );
+    );
 };
 
 export default Contribute;

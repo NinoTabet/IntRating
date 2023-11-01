@@ -38,7 +38,6 @@ const Contact = () => {
                     <div className="row justify-content-center mt-5">
                         <div className="col-md-6 text-center">
                             <div className="form-group">
-                                <label className="text-center">Feedback</label>
                                 <textarea
                                     className="form-control text-center text-body mt-2"
                                     rows="4"
