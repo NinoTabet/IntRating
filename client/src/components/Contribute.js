@@ -94,7 +94,7 @@ const Contribute = ({handleSearchSuccess}) => {
             <div className="row justify-content-center mb-3">
                 <div className="col-2">
                 <div className="form-group text-center">
-                    <label htmlFor="playerName">Player Name</label>
+                    <label className='h4' htmlFor="playerName">Player Name</label>
                     <input
                     type="text"
                     className="form-control text-center"
@@ -109,20 +109,20 @@ const Contribute = ({handleSearchSuccess}) => {
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Cs'ing</label>
+                            <label className="h4">Cs'ing</label>
                             <ContributionStars value={creep_score} onChange={(value) => setCreep_score(value)} attributeType="csing" />
 
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Map Awareness</label>
+                            <label className="h4">Map Awareness</label>
                             <ContributionStars value={map_awareness_score} onChange={(value) => setMap_awareness_score(value)} attributeType="MapAwareness"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Team Fighting</label>
+                            <label className="h4">Team Fighting</label>
                             <ContributionStars value={team_fighting_score} onChange={(value) => setTeam_fighting_score(value)} attributeType="TeamFighting"/>
                         </div>
                         </div>
@@ -131,19 +131,19 @@ const Contribute = ({handleSearchSuccess}) => {
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Intentional Feeding</label>
+                            <label className="h4">Intentional Feeding</label>
                             <ContributionStars value={feeding_score} onChange={(value) => setFeeding_score(value)} attributeType="IntentionalFeeding"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Toxicity</label>
+                            <label className="h4">Toxicity</label>
                             <ContributionStars value={toxicity_score} onChange={(value) => setToxicity_score(value)} attributeType="Toxicity"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Tiltability</label> 
+                            <label className="h4">Tiltability</label> 
                             <ContributionStars value={tilt_score} onChange={(value) => setTilt_score(value)} attributeType="Tiltability"/>
                         </div>
                         </div>
@@ -152,19 +152,19 @@ const Contribute = ({handleSearchSuccess}) => {
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Kindness</label>
+                            <label className="h4">Kindness</label>
                             <ContributionStars value={kindness_score} onChange={(value) => setKindness_score(value)} attributeType="Kindness"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Laning / Jungling</label>
+                            <label className="h4">Laning / Jungling</label>
                             <ContributionStars value={laning_score} onChange={(value) => setLaning_score(value)} attributeType="Laning/Jungling"/>
                         </div>
                         </div>
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Carry-ability</label>
+                            <label className="h4">Carry-ability</label>
                             <ContributionStars value={carry_score} onChange={(value) => setCarry_score(value)} attributeType="CarryAbility"/>
                         </div>
                         </div>
@@ -173,7 +173,7 @@ const Contribute = ({handleSearchSuccess}) => {
                 <div className="row justify-content-center mb-3">
                         <div className="col-2">
                         <div className="form-group text-center">
-                            <label>Shot calling</label>
+                            <label className="h4">Shot calling</label>
                             <ContributionStars value={shot_calling_score} onChange={(value) => setShot_calling_score(value)} attributeType="ShotCalling"/>
                         </div>
                         </div>
@@ -181,7 +181,7 @@ const Contribute = ({handleSearchSuccess}) => {
                 <div className="row justify-content-center mb-3">
                     <div className="col-1">
                         <div className="form-group text-center">
-                            <label>Play again?</label>
+                            <label className="h4">Play again?</label>
 
                             <select className="form-control" value={play_again} onChange={(e) => setPlay_again(e.target.value)}>
                                 <option value="select" disabled>Select an option</option>
@@ -191,14 +191,14 @@ const Contribute = ({handleSearchSuccess}) => {
                         </div>
                     </div>
                 </div>
-                <div className="row justify-content-center mb-3">
+                {/* <div className="row justify-content-center mb-3">
                     <div className="col-4">
                         <div className="form-group">
                         <label className="text-center">Write a review</label>
                         <textarea className="form-control text-center" rows="3" placeholder="Enter your review"></textarea>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="row justify-content-center">
                     <div className="col-md-6 text-center">
                     <button

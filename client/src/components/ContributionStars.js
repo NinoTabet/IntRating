@@ -228,7 +228,7 @@ const ContributionStars = ({ value, onChange, attributeType }) => {
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={`star-${star}-${rating}`}
-          className={`star-${star} ${star <= rating ? 'selected' : ''}`}
+          className={`h5 star-${star} ${star <= rating ? 'selected' : ''}`}
           onClick={() => handleClick(star)}
           onMouseOver={() => handleMouseOver(star)}
           onMouseLeave={handleMouseLeave}
@@ -236,8 +236,9 @@ const ContributionStars = ({ value, onChange, attributeType }) => {
           {star <= rating ? '★' : '☆'}
         </span>
       ))}
-    <div>
+    <div className="text-muted"><small>
         {hoveredRating > 0 && getSectionText(hoveredRating)}
+        </small>
     </div>
     </div>
   );
