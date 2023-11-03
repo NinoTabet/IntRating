@@ -252,6 +252,7 @@ app.get("/api/collect-averages", async (req, res) => {
   }
 });
 
+// feedback form logic
 app.post("/feedback", async (req, res) => {
   try {
     const {feedback} = req.body;
@@ -266,13 +267,14 @@ app.post("/feedback", async (req, res) => {
 }
 });
 
+// front page total ratings count logic
 app.get("/total_ratings", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT MAX(rating_id) as latestRatingId FROM ratings"
     );
 
-    const latestRatingId = result.rows[0].latestratingid; // Updated this line
+    const latestRatingId = result.rows[0].latestratingid;
     res.json({ latestRatingId });
 
   } catch (error) {
@@ -281,6 +283,36 @@ app.get("/total_ratings", async (req, res) => {
   }
 });
 
+// user signup api
+app.post("/singup", async (req, res) =>{
+  try {
+    const { email_address, password, username } = req.body;
+
+    // checks if account with provided email exists
+    // queries against lower case emails
+    const accountEmailCheck = await pool.query(
+      "SELECT email FROM user_accounts WHERE email = LOWER($1)",
+      [email_address]
+    );
+
+    // checks if account with provided username was provided already exists 
+    const accountUsernameCheck = await pool.query(
+      "SELECT lower_username FROM user_accounts WHERE username = LOWER($1)",
+      [username]
+    );
+
+    if (accountEmailCheck.rows[0]>0){
+      // respond with 404 err saying 'Email already in use. if you forgot your password please click the password reset button!'
+    }else if(accountUsernameCheck.rows[0]>0){
+      // response with 404 err saying 'Username already in use. Please choose another Username'
+    }else{
+    // if all is good then make the account and respond with 200 success
+    }
+  } catch (error) {
+
+  }
+
+});
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server has started on port ${port}`);
