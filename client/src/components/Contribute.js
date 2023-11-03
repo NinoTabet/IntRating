@@ -182,7 +182,6 @@ const Contribute = ({handleSearchSuccess}) => {
                     <div className="col-1">
                         <div className="form-group text-center">
                             <label className="h4">Play again?</label>
-
                             <select className="form-control" value={play_again} onChange={(e) => setPlay_again(e.target.value)}>
                                 <option value="select" disabled>Select an option</option>
                                 <option value="yes">Yes</option>
