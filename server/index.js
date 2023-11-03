@@ -285,6 +285,7 @@ app.get("/total_ratings", async (req, res) => {
 
 // user signup api
 app.post("/singup", async (req, res) =>{
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
   try {
     const { email_address, password, username } = req.body;
 
@@ -302,17 +303,27 @@ app.post("/singup", async (req, res) =>{
     );
 
     if (accountEmailCheck.rows[0]>0){
-      // respond with 404 err saying 'Email already in use. if you forgot your password please click the password reset button!'
+      // respond with 400 err saying 'Email already in use. if you forgot your password please click the password reset button!'
+   
     }else if(accountUsernameCheck.rows[0]>0){
-      // response with 404 err saying 'Username already in use. Please choose another Username'
+      // response with 400 err saying 'Username already in use. Please choose another Username'
+   
     }else{
-    // if all is good then make the account and respond with 200 success
+      if (!passwordRegex.test(password)) {
+        // respond with 400 error saying 'Password must contain at least 1 capital letter, 1 number, and 1 special character.'
+      } else {
+        // if all is good then make the account and respond with 200 success
+      }
     }
   } catch (error) {
 
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 
 });
+
+// server port logic
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server has started on port ${port}`);
