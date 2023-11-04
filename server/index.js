@@ -305,14 +305,12 @@ app.post("/singup", async (req, res) =>{
     );
 
     if (accountEmailCheck.rows[0]>0){
-      // respond with 400 err saying 'Email already in use. if you forgot your password please click the password reset button!'
-   
+      res.status(400).send("Email already in use. if you forgot your password please click the password reset button!");
     }else if(accountUsernameCheck.rows[0]>0){
-      // response with 400 err saying 'Username already in use. Please choose another Username'
-   
+      res.status(400).send("Username already in use. Please choose another username!");
     }else{
       if (!passwordRegex.test(password)) {
-        // 400 err
+        res.status(400).send("password does not meet stated security requirements.");
       } else {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const userSignUp = await pool.query(
