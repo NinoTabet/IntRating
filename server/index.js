@@ -290,9 +290,7 @@ app.post("/singup", async (req, res) =>{
   const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
   try {
     const { email_address, password, username } = req.body;
-
     // checks if account with provided email exists
-    // queries against lower case emails
     const accountEmailCheck = await pool.query(
       "SELECT email FROM user_accounts WHERE email = LOWER($1)",
       [email_address]
@@ -305,16 +303,16 @@ app.post("/singup", async (req, res) =>{
     );
 
     if (accountEmailCheck.rows[0]>0){
-      res.status(400).send("Email already in use. if you forgot your password please click the password reset button!");
+      res.status(400).send("Email is already in use. If you forgot your password please click the \"Forgot password\" button!");
     }else if(accountUsernameCheck.rows[0]>0){
-      res.status(400).send("Username already in use. Please choose another username!");
+      res.status(400).send("Username is already in use. Please choose another username.");
     }else{
       if (!passwordRegex.test(password)) {
         res.status(400).send("password does not meet stated security requirements.");
       } else {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const userSignUp = await pool.query(
-          "INSERT INTO user_accounts (email, username, lower_username, hashed_password)VALUES (LOWER($1), ($2), LOWER($3), $4)",
+          "INSERT INTO user_accounts (email, username, lower_username, password)VALUES (LOWER($1), ($2), LOWER($3), $4)",
           [email_address, username, username, hashedPassword]
         );
         res.status(200).send("Account created successfully");
@@ -326,6 +324,32 @@ app.post("/singup", async (req, res) =>{
   }
 });
 
+// user login api
+app.post("/login", async(req, res)=>{
+  const { email_address, password } = req.body;
+  try {
+    // check to see if email exists in db
+    const user = await pool.query(
+      "SELECT * FROM user_accounts WHERE email = LOWER($1)",
+      [email_address]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(404).json({ message: "There is account associated with the provided email." });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
+
+    if (passwordMatch) {
+      res.status(200).json({ message: "Login successful" });
+    } else {
+      // If passwords do not match, respond with an error
+      res.status(401).json({ message: "Invalid password" });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({message:"Internal Server Error"});
+  }
+});
 // server port logic
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
