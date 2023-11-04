@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const pool = require("./db");
+const bcrypt = require('bcrypt');
+const saltRounds = 12;
 
 app.use(cors());
 app.use(express.json());
@@ -310,17 +312,20 @@ app.post("/singup", async (req, res) =>{
    
     }else{
       if (!passwordRegex.test(password)) {
-        // respond with 400 error saying 'Password must contain at least 1 capital letter, 1 number, and 1 special character.'
+        // 400 err
       } else {
-        // if all is good then make the account and respond with 200 success
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const userSignUp = await pool.query(
+          "INSERT INTO user_accounts (email, username, lower_username, hashed_password)VALUES (LOWER($1), ($2), LOWER($3), $4)",
+          [email_address, username, username, hashedPassword]
+        );
+        res.status(200).send("Account created successfully");
       }
     }
   } catch (error) {
-
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
-
 });
 
 // server port logic
