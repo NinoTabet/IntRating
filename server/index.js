@@ -292,7 +292,7 @@ app.get("/total_ratings", async (req, res) => {
 });
 
 // user signup api
-app.post("/singup", async (req, res) =>{
+app.post("/signup", async (req, res) =>{
   const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
   try {
     const { email_address, password, username } = req.body;
