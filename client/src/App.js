@@ -6,6 +6,8 @@ import Contribute from './components/Contribute';
 import Contact from './components/Contact';
 import DisplayPlayer from './components/DisplayPlayer';
 import LoginSignup from './components/LoginSignup';
+import LogIn from './components/LogIn';
+import SignUp from './components/SignUp';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -30,7 +32,11 @@ const App = () => {
       case 'contact':
         return <Contact />;
       case 'loginsignup':
-        return <LoginSignup />;
+        return <LoginSignup setCurrentPage={setCurrentPage}/>;
+      case 'login':
+        return <LogIn />;
+      case 'signup':
+        return <SignUp />;
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:
