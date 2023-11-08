@@ -3,22 +3,14 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const pool = require("./db");
-const bcrypt = require('bcrypt');
-const saltRounds = 12;
-const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.json());
 
 // player rating logic
-app.post("/rating", verifyToken, async (req, res) => {
+app.post("/rating", async (req, res) => {
   try {
     const { original_username, server_name } = req.body;
-
-    const userId = req.user.userId;
-    if (!userId) {
-      return res.status(401).json({ message: "Invalid user ID" });
-    }
 
     // Check if player in the specified server exists
     const playerCheck = await pool.query(
@@ -52,17 +44,17 @@ app.post("/rating", verifyToken, async (req, res) => {
         play_again,
     } = req.body;
     
-    if ([creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score].some(score => score < 1 || score > 5))
-    {
+    if (
+      [creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score].some(score => score < 1 || score > 5)
+    ) {
       return res.status(400).json({ message: "All scores must be between 1 and 5." });
     }
     
     // Input into the ratings table with the request info
     const rating = await pool.query(
-      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
+      "INSERT INTO ratings (player_id, creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
       [
           player_id,
-          userId,
           creep_score,
           map_awareness_score,
           team_fighting_score,
@@ -119,7 +111,7 @@ app.get("/search", async (req, res) => {
     }
 });
 
-// gets all server names
+//gets all server names
 app.get("/servers", async (req, res) => {
     try {
       const servers = await pool.query("SELECT server_name FROM server");
@@ -290,104 +282,6 @@ app.get("/total_ratings", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" }); 
   }
 });
-
-// user signup api
-app.post("/signup", async (req, res) =>{
-  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
-  try {
-    const { email_address, password, username } = req.body;
-    // checks if account with provided email exists
-    const accountEmailCheck = await pool.query(
-      "SELECT email FROM user_accounts WHERE email = LOWER($1)",
-      [email_address]
-    );
-
-    // checks if account with provided username was provided already exists 
-    const accountUsernameCheck = await pool.query(
-      "SELECT lower_username FROM user_accounts WHERE username = LOWER($1)",
-      [username]
-    );
-
-    if (accountEmailCheck.rows[0]>0){
-      res.status(400).send("Email is already in use. If you forgot your password please click the \"Forgot password\" button!");
-    }else if(accountUsernameCheck.rows[0]>0){
-      res.status(400).send("Username is already in use. Please choose another username.");
-    }else{
-      if (!passwordRegex.test(password)) {
-        res.status(400).send("password does not meet stated security requirements.");
-      } else {
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const userSignUp = await pool.query(
-          "INSERT INTO user_accounts (email, username, lower_username, password)VALUES (LOWER($1), ($2), LOWER($3), $4)",
-          [email_address, username, username, hashedPassword]
-        );
-        res.status(200).send("Account created successfully");
-      }
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// user login api
-app.post("/login", async(req, res)=>{
-  const { email_address, password } = req.body;
-  try {
-    // check to see if email exists in db
-    // if it does, then the user_id is selected
-    const user = await pool.query(
-      "SELECT user_id, password FROM user_accounts WHERE email = LOWER($1)",
-      [email_address]
-    );
-
-    if (user.rows.length === 0) {
-      return res.status(404).json({ message: "There is no account associated with the provided email." });
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
-    if (passwordMatch) {
-      const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '6h' });
-      res.status(200).json({ message: "Login successful", token }); //remove token from 200 response after testing
-    } else {
-      // If passwords do not match, respond with an error
-      res.status(401).json({ message: "Invalid password" });
-    }
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({message:"Internal Server Error"});
-  }
-});
-
-// middleware to verify JWT
-function verifyToken(req, res, next) {
-  try {
-    const token = req.headers['authorization'];
-
-    console.log('Token:', token);
-
-    if (!token) {
-      console.log('Unauthorized: Token not found');
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        console.log('Forbidden: Token verification failed');
-        return res.status(403).json({ message: 'Forbidden' });
-      }
-
-      console.log('Token verified successfully');
-      req.user = user;
-      next();
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
-
-
 
 // server port logic
 const port = process.env.PORT || 3000;

@@ -24,10 +24,6 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
                   Home
                 </a>
               </li>
-              <li className='nav-item'>
-                <a href='#' className={`nav-link px-2 text-light ${currentPage === 'loginsignup' ? 'link-secondary' : ''}`}
-                  onClick={() => handleNavigation('loginsignup')}>Log in / Sign up</a>
-              </li>
               <li className="nav-item">
                 <a
                   href="#"

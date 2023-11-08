@@ -5,7 +5,6 @@ import NavBar from './components/NavBar';
 import Contribute from './components/Contribute';
 import Contact from './components/Contact';
 import DisplayPlayer from './components/DisplayPlayer';
-import LoginSignup from './components/LoginSignup';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -29,8 +28,6 @@ const App = () => {
         return <Contribute handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
       case 'contact':
         return <Contact />;
-      case 'loginsignup':
-        return <LoginSignup />;
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:
