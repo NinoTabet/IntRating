@@ -5,7 +5,7 @@ import ContributionStars from './ContributionStars';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
-const Contribute = ({handleSearchSuccess}) => {
+const Contribute = ({ token, handleSearchSuccess}) => {
 
     // all main input fields for rating
     const [ original_username, setOriginal_username ] = useState("");
@@ -24,10 +24,10 @@ const Contribute = ({handleSearchSuccess}) => {
     // server selector used for locating specified player
     const [ selectedServer, setSelectedServer ] = useState(null);
 
-
     // saves player data
     const [playerData, setPlayerData] = useState({});
 
+      
     const onSubmitForm = async e => {
         e.preventDefault();
 
@@ -54,7 +54,10 @@ const Contribute = ({handleSearchSuccess}) => {
             const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
             const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
             body: JSON.stringify(body)
         });
             const url = apiUrl + `/search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;

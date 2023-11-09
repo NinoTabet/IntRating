@@ -10,6 +10,34 @@ const jwt = require('jsonwebtoken');
 app.use(cors());
 app.use(express.json());
 
+function verifyToken(req, res, next) {
+  try {
+    const token = req.headers['authorization'];
+    console.log('Token:', token);
+
+    // Check if the token is not present
+    if (!token) {
+      console.log('Unauthorized: Token not found');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Verify the token
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        console.log('Forbidden: Token verification failed');
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      console.log('Token verified successfully');
+      req.user = user;
+      next();
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
 // player rating logic
 app.post("/rating", verifyToken, async (req, res) => {
   try {
@@ -294,8 +322,8 @@ app.get("/total_ratings", async (req, res) => {
 // user signup api
 app.post("/signup", async (req, res) =>{
   const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
+  const { email_address, password, username } = req.body;
   try {
-    const { email_address, password, username } = req.body;
     // checks if account with provided email exists
     const accountEmailCheck = await pool.query(
       "SELECT email FROM user_accounts WHERE email = LOWER($1)",
@@ -349,6 +377,7 @@ app.post("/login", async(req, res)=>{
     if (passwordMatch) {
       const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '6h' });
       res.status(200).json({ message: "Login successful", token }); //remove token from 200 response after testing
+      console.log("Login successful! your token is: " + token )
     } else {
       // If passwords do not match, respond with an error
       res.status(401).json({ message: "Invalid password" });
@@ -358,36 +387,6 @@ app.post("/login", async(req, res)=>{
     res.status(500).json({message:"Internal Server Error"});
   }
 });
-
-// middleware to verify JWT
-function verifyToken(req, res, next) {
-  try {
-    const token = req.headers['authorization'];
-
-    console.log('Token:', token);
-
-    if (!token) {
-      console.log('Unauthorized: Token not found');
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        console.log('Forbidden: Token verification failed');
-        return res.status(403).json({ message: 'Forbidden' });
-      }
-
-      console.log('Token verified successfully');
-      req.user = user;
-      next();
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
-
-
 
 // server port logic
 const port = process.env.PORT || 3000;
