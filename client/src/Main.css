@@ -4,6 +4,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.center_nav{
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%,0%);
+}
 nav{
   background-color: #040D12;
 }

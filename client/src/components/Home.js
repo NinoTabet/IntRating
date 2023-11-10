@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import "../Main.css";
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -26,7 +26,7 @@ const Home = ({ handleContributeClick, handleSearchSuccess }) => {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <div className="middle_page d-flex flex-column align-items-center">
       <h1 className='text-center'>Welcome to Int Rating!</h1>
       <p className='text-center mt-4'>Please feel free to leave some feedback by clicking the feedback tab!</p>
@@ -50,7 +50,7 @@ const Home = ({ handleContributeClick, handleSearchSuccess }) => {
           </ul>
         </nav>
       </div>
-    </Fragment>
+    </>
   );
 };
 

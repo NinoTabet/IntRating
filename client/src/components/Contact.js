@@ -31,9 +31,9 @@ const Contact = () => {
     };   
 
     return (
-        <div className="container mt-lg-5 middle_page w-50">
+        <div className="container mt-5 middle_page w-50">
             <h1 className="text-center">FEEDBACK FORM</h1>
-            <div className="mt-lg-5">
+            <div className="mt-5">
                 <form className="mt-3" onSubmit={onSubmitForm}>
                     <div className="row justify-content-center mt-5">
                         <div className="col-md-6 text-center">

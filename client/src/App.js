@@ -15,7 +15,6 @@ const App = () => {
     setCurrentPage('contribute');
     setSubmissionSuccess(false);
   };
-
   const handleSearchSuccess = (data) => {
     setCurrentPage('displayPlayer');
     setPlayerData(data);
