@@ -12,11 +12,12 @@ const LogIn = () => {
     try {
       
       const body = { email_address, password }
-      const response = await fetch(apiUrl + "/login", {
+      await fetch(apiUrl + "/login", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(body)
     });
+    
     } catch (err) {
       console.error(err.message);
     }

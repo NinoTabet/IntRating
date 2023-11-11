@@ -90,7 +90,7 @@ app.post("/rating", verifyToken, async (req, res) => {
     
     // Input into the ratings table with the request info
     const rating = await pool.query(
-      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again. review) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *",
+      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again, review) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *",
       [
           player_id,
           userId,

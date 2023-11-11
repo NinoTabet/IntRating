@@ -25,10 +25,6 @@ const App = () => {
     setPlayerData(data);
   };
 
-  const handleLogin = (receivedToken) => {
-    setToken(receivedToken);
-  };
-
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
@@ -40,9 +36,9 @@ const App = () => {
       case 'loginsignup':
         return <LoginSignup setCurrentPage={setCurrentPage}/>;
       case 'login':
-        return <LogIn onLogin={handleLogin} />;
+        return <LogIn/>;
       case 'signup':
-        return <SignUp />;
+        return <SignUp/>;
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:
