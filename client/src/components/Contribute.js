@@ -19,6 +19,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
     const [ laning_score, setLaning_score ] = useState("");
     const [ carry_score, setCarry_score ] = useState("");
     const [ shot_calling_score, setShot_calling_score ] = useState("");
+    const [ review, setReview ] = useState("");
     const [ play_again, setPlay_again ] = useState('yes');
 
     // server selector used for locating specified player
@@ -51,7 +52,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
             return;
         }
         try {
-            const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
+            const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
             const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",
             headers: {
@@ -71,7 +72,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
             setPlayerData({ original_username: data.original_username, server_name: selectedServer });
             handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, playerData: data });
         }else{
-            alert("Failed to insert rating. Please make sure ratings are between 0 and 10 inclusive!");
+            alert("Please log in before attempting to contribute a rating!");
         }
         } catch (err) {
             console.error(err.message);
@@ -182,10 +183,10 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                         </div>
                 </div>
                 <div className="row justify-content-center mb-3">
-                    <div className="col-1">
+                    <div className="col-2">
                         <div className="form-group text-center">
-                            <label className="h4">Play again?</label>
-                            <select className="form-control" value={play_again} onChange={(e) => setPlay_again(e.target.value)}>
+                            <label className="h4 text-nowrap">Play again?</label>
+                            <select className="form-control text-center" value={play_again} onChange={(e) => setPlay_again(e.target.value)}>
                                 <option value="select" disabled>Select an option</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
@@ -193,14 +194,14 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                         </div>
                     </div>
                 </div>
-                {/* <div className="row justify-content-center mb-3">
+                <div className="row justify-content-center mb-3">
                     <div className="col-4">
                         <div className="form-group">
                         <label className="text-center">Write a review</label>
-                        <textarea className="form-control text-center" rows="3" placeholder="Enter your review"></textarea>
+                        <textarea className="form-control text-center" rows="3" placeholder="Enter your review" value={review || ''}onChange={(e) => setReview(e.target.value)}></textarea>
                         </div>
                     </div>
-                </div> */}
+                </div>
                 <div className="row justify-content-center">
                     <div className="col-md-6 text-center">
                     <button

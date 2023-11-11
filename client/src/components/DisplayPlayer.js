@@ -240,29 +240,30 @@ const DisplayPlayer = (props) => {
     useEffect(() => {
         updateAndFetchData();
     }, []);
-    // const formatElapsedTime = (timestamp) => {
-    //     if (!timestamp) {
-    //     return 'Loading...';
-    //     }
-    
-    //     const elapsedMilliseconds = Date.now() - new Date(timestamp).getTime();
-    //     const elapsedSeconds = Math.floor(elapsedMilliseconds / 500);
-    //     const minutes = Math.floor(elapsedSeconds / 60);
-    //     const seconds = elapsedSeconds % 60;
-    
-    //     const formattedTime = [];
-    
-    //     if (minutes > 0) {
-    //     formattedTime.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-    //     }
-    
-    //     if (seconds > 0) {
-    //     formattedTime.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
-    //     }
-    
-    //     return formattedTime.length > 0 ? formattedTime.join(' ') + ' ago' : 'Just now';
-    // };
 
+    const formatElapsedTime = (timestamp) => {
+        if (!timestamp) {
+            return 'Loading...';
+        }
+    
+        const parsedTimestamp = new Date(timestamp.replace(' ', 'T'));
+        const elapsedMilliseconds = Date.now() - parsedTimestamp.getTime();
+        const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000000);
+        const minutes = Math.floor(elapsedSeconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+    
+        if (minutes < 1) {
+            return 'Just now';
+        } else if (minutes < 60) {
+            return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+        } else if (hours < 24) {
+            return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+        } else {
+            return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+        }
+    };   
+    
   // Render JSX
     return (
         <>
@@ -274,7 +275,7 @@ const DisplayPlayer = (props) => {
                     <button onClick={updateAndFetchData} className="mt-3 btn-pill">
                     Update
                     </button>
-                     <p className="mt-3">Last updated: <span>{updatedData ? `${updatedData.updated_player_averages.last_click_timestamp}` : `Loading...`}</span></p> 
+                    <p className="mt-3">Last updated: <span>{updatedData ? formatElapsedTime(updatedData.updated_player_averages.last_click_timestamp) : 'Loading...'}</span></p>
                     <div className="text-center">
                         <label className="mb-2">Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></label>
                     </div>

@@ -24,15 +24,16 @@ function verifyToken(req, res, next) {
     // Verify the token
     jwt.verify(token.split(' ')[1], process.env.JWT_SECRET, (err, user) => {
       if (err) {
-        console.log('Forbidden: Token verification failed');
-        console.error(err); // Log the actual error for debugging
-        return res.status(403).json({ message: 'Forbidden' });
+         console.log('Forbidden: Token verification failed');
+         console.error(err);
+         return res.status(403).json({ message: 'Forbidden' });
       }
-
-      console.log('Token verified successfully');
+   
+      console.log('Token verified successfully:', user);
       req.user = user;
       next();
-    });
+   });
+   
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -79,6 +80,7 @@ app.post("/rating", verifyToken, async (req, res) => {
         carry_score,
         shot_calling_score,
         play_again,
+        review,
     } = req.body;
     
     if ([creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score].some(score => score < 1 || score > 5))
@@ -88,7 +90,7 @@ app.post("/rating", verifyToken, async (req, res) => {
     
     // Input into the ratings table with the request info
     const rating = await pool.query(
-      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
+      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again. review) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *",
       [
           player_id,
           userId,
@@ -102,7 +104,8 @@ app.post("/rating", verifyToken, async (req, res) => {
           laning_score,
           carry_score,
           shot_calling_score,
-          play_again
+          play_again,
+          review
       ]
     );
 
