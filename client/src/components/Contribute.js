@@ -56,7 +56,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`
               },
             body: JSON.stringify(body)
         });
@@ -95,7 +95,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                 </div>
             </div>
             <div className="row justify-content-center mb-3">
-                <div className="col-2">
+                <div className="col-12 col-md-2">
                 <div className="form-group text-center">
                     <label className='h4' htmlFor="playerName">Player Name</label>
                     <input
@@ -110,20 +110,20 @@ const Contribute = ({ token, handleSearchSuccess}) => {
             </div>
                 {/* this is one line */}
                 <div className="row justify-content-center mb-3">
-                    <div className="col-2">
+                    <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Cs'ing</label>
                             <ContributionStars value={creep_score} onChange={(value) => setCreep_score(value)} attributeType="csing" />
 
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Map Awareness</label>
                             <ContributionStars value={map_awareness_score} onChange={(value) => setMap_awareness_score(value)} attributeType="MapAwareness"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Team Fighting</label>
                             <ContributionStars value={team_fighting_score} onChange={(value) => setTeam_fighting_score(value)} attributeType="TeamFighting"/>
@@ -132,19 +132,19 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                 </div>
                 {/* this is one line */}
                 <div className="row justify-content-center mb-3">
-                    <div className="col-2">
+                    <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Intentional Feeding</label>
                             <ContributionStars value={feeding_score} onChange={(value) => setFeeding_score(value)} attributeType="IntentionalFeeding"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Toxicity</label>
                             <ContributionStars value={toxicity_score} onChange={(value) => setToxicity_score(value)} attributeType="Toxicity"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Tiltability</label> 
                             <ContributionStars value={tilt_score} onChange={(value) => setTilt_score(value)} attributeType="Tiltability"/>
@@ -153,19 +153,19 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                 </div>
                 {/* this is one line */}
                 <div className="row justify-content-center mb-3">
-                    <div className="col-2">
+                    <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Kindness</label>
                             <ContributionStars value={kindness_score} onChange={(value) => setKindness_score(value)} attributeType="Kindness"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Laning / Jungling</label>
                             <ContributionStars value={laning_score} onChange={(value) => setLaning_score(value)} attributeType="Laning/Jungling"/>
                         </div>
                         </div>
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Carry-ability</label>
                             <ContributionStars value={carry_score} onChange={(value) => setCarry_score(value)} attributeType="CarryAbility"/>
@@ -174,7 +174,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
                 {/* this is one line */}
                 </div>
                 <div className="row justify-content-center mb-3">
-                        <div className="col-2">
+                        <div className="col-12 col-md-2">
                         <div className="form-group text-center">
                             <label className="h4">Shot calling</label>
                             <ContributionStars value={shot_calling_score} onChange={(value) => setShot_calling_score(value)} attributeType="ShotCalling"/>

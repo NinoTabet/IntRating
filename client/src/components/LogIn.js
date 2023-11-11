@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const LogIn = ({ onLogin }) => {
+const LogIn = () => {
 
   const [ email_address, setEmail_address ] = useState("");
   const [ password, setPassword ] = useState("");
@@ -17,11 +17,6 @@ const LogIn = ({ onLogin }) => {
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(body)
     });
-
-    const data = await response.json();
-    const receivedToken = data.token;
-    onLogin(receivedToken);
-
     } catch (err) {
       console.error(err.message);
     }

@@ -10,10 +10,10 @@ const jwt = require('jsonwebtoken');
 app.use(cors());
 app.use(express.json());
 
+// middleware jwt auth
 function verifyToken(req, res, next) {
   try {
     const token = req.headers['authorization'];
-    console.log('Token:', token);
 
     // Check if the token is not present
     if (!token) {
@@ -22,9 +22,10 @@ function verifyToken(req, res, next) {
     }
 
     // Verify the token
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token.split(' ')[1], process.env.JWT_SECRET, (err, user) => {
       if (err) {
         console.log('Forbidden: Token verification failed');
+        console.error(err); // Log the actual error for debugging
         return res.status(403).json({ message: 'Forbidden' });
       }
 
