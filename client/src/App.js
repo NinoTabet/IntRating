@@ -39,6 +39,8 @@ const App = () => {
         return <LogIn/>;
       case 'signup':
         return <SignUp/>;
+      case 'profile':
+        return <Profile token={token}/>
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:

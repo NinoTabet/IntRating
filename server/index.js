@@ -121,6 +121,42 @@ app.post("/rating", verifyToken, async (req, res) => {
   }
 });
 
+// profile info load
+app.get("/profile", verifyToken, async (req,res)=>{
+ 
+  // userId associated with the token
+  const userId = req.user.userId;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized request. Please log in before performing this action." });
+  }
+ 
+  try {
+    
+    // searches for all reviews associated with the userId found in the jwt
+    const reviewSearch = await pool.query(
+      "SELECT * FROM ratings WHERE user_id = $1",
+      [userId]
+    ); 
+
+    const usernameSearch = await pool.query(
+      "SELECT username FROM user_accounts WHERE user_id = $1",
+      [userId]
+    ); 
+
+    const responseData = {
+     // reviewSearch: reviewSearch.rows[0], // correct this shit later
+      usernameSearch: usernameSearch.rows[0],
+    };
+
+    res.json(responseData);
+
+  } catch (error) {
+    return res.status(400).json({ message: "Unauthorized request. " });
+  }
+});
+
+// !!---------- After this line, jwt is not needed ----------!!
+
 // player search
 app.get("/search", async (req, res) => {
     try {

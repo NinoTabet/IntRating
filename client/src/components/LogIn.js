@@ -1,4 +1,4 @@
-//LogIn.js
+//LoginSignup
 import React, { useState } from 'react';
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -12,12 +12,12 @@ const LogIn = () => {
     try {
       
       const body = { email_address, password }
-      await fetch(apiUrl + "/login", {
+      const response = await fetch(apiUrl + "/login", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(body)
     });
-    
+
     } catch (err) {
       console.error(err.message);
     }

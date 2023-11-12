@@ -46,6 +46,15 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
                   Feedback
                 </a>
               </li>
+              <li className="nav-item">
+                <a
+                  href="#"
+                  className={`nav-link px-2 text-light ${currentPage === 'profile' ? 'link-secondary' : ''}`}
+                  onClick={() => handleNavigation('profile')}
+                >
+                  Profile
+                </a>
+              </li>
             </ul> 
           </div>
             <div className="ms-auto mb-auto">
