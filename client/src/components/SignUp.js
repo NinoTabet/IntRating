@@ -11,18 +11,24 @@ const SignUp = () => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-            const body = { email_address, username, password };
-            const response = await fetch(apiUrl + "/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-            }); 
+          const body = { email_address, username, password };
+          const response = await fetch(apiUrl + "/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
 
+          if (!response.ok) {
+            const errorData = await response.json();
+            alert(errorData.error); // Show the error message in an alert
+            return;
+          }
+          // Handle success, e.g., redirect or show success message
         } catch (err) {
-            console.error("Error:", err.message);
-            alert('An error occurred while trying to submit your feedback. Please try again.');
+          console.error("Error:", err.message);
+          alert('An error occurred while trying to submit your feedback. Please try again.');
         }
-    };   
+      };   
 
   return (
     <>
