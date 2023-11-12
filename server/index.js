@@ -324,7 +324,7 @@ app.get("/total_ratings", async (req, res) => {
 });
 
 // user signup api
-app.post("/signup", async (req, res) =>{
+app.post("/signup", async (req, res) => {
   const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
   const { email_address, password, username } = req.body;
   try {
@@ -334,26 +334,26 @@ app.post("/signup", async (req, res) =>{
       [email_address]
     );
 
-    // checks if account with provided username was provided already exists 
+    // checks if account with provided username was provided already exists
     const accountUsernameCheck = await pool.query(
       "SELECT lower_username FROM user_accounts WHERE username = LOWER($1)",
       [username]
     );
 
-    if (accountEmailCheck.rows[0]>0){
-      res.status(400).send("Email is already in use. If you forgot your password please click the \"Forgot password\" button!");
-    }else if(accountUsernameCheck.rows[0]>0){
-      res.status(400).send("Username is already in use. Please choose another username.");
-    }else{
+    if (accountEmailCheck.rows.length > 0) {
+      return res.status(400).send("Email is already in use. If you forgot your password please click the \"Forgot password\" button!");
+    } else if (accountUsernameCheck.rows.length > 0) {
+      return res.status(400).send("Username is already in use. Please choose another username.");
+    } else {
       if (!passwordRegex.test(password)) {
-        res.status(400).send("password does not meet stated security requirements.");
+        return res.status(400).send("password does not meet stated security requirements.");
       } else {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const userSignUp = await pool.query(
-          "INSERT INTO user_accounts (email, username, lower_username, password)VALUES (LOWER($1), ($2), LOWER($3), $4)",
+          "INSERT INTO user_accounts (email, username, lower_username, password) VALUES (LOWER($1), ($2), LOWER($3), $4)",
           [email_address, username, username, hashedPassword]
         );
-        res.status(200).send("Account created successfully");
+        return res.status(200).send("Account created successfully");
       }
     }
   } catch (error) {
