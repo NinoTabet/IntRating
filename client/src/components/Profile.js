@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const Profile = (token) =>{
+const Profile = () =>{
 
     const [reviewList, setReviewList] = useState([]);
     const [userData, setUserData] = useState(null);
