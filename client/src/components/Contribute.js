@@ -5,7 +5,7 @@ import ContributionStars from './ContributionStars';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
-const Contribute = ({ token, handleSearchSuccess}) => {
+const Contribute = ({ handleSearchSuccess}) => {
 
     // all main input fields for rating
     const [ original_username, setOriginal_username ] = useState("");
@@ -57,7 +57,7 @@ const Contribute = ({ token, handleSearchSuccess}) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${placeholder}`
               },
             body: JSON.stringify(body)
         });

@@ -14,7 +14,7 @@ const Profile = (token) =>{
             const response = await fetch(apiUrl + "/profile", {
               method: "GET",
               headers: { "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
+              "Authorization": `Bearer ${placeholder}`
             },
             });
             if (response.ok) {

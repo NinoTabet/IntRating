@@ -14,7 +14,6 @@ const App = () => {
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [playerData, setPlayerData] = useState(null);
 
-  const [token, setToken] = useState(null);
 
   const handleContributeClick = () => {
     setCurrentPage('contribute');
@@ -30,7 +29,7 @@ const App = () => {
       case 'home':
         return <Home handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
       case 'contribute':
-        return <Contribute token={token} handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
+        return <Contribute handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
       case 'contact':
         return <Contact />;
       case 'loginsignup':
@@ -40,7 +39,7 @@ const App = () => {
       case 'signup':
         return <SignUp/>;
       case 'profile':
-        return <Profile token={token}/>
+        return <Profile/>
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:
