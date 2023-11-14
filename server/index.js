@@ -416,10 +416,8 @@ app.post("/login", async(req, res)=>{
     const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
     if (passwordMatch) {
       const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '6h' });
-      res.status(200).json({ message: "Login successful", token }); //remove token from 200 response after testing
-      console.log("Login successful! your token is: " + token )
+      return token;
     } else {
-      // If passwords do not match, respond with an error
       res.status(401).json({ message: "Invalid password" });
     }
   } catch (error) {

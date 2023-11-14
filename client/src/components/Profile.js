@@ -1,10 +1,14 @@
 // profile.js
 import React, { useState, useEffect } from 'react';
+import Cookies from 'universal-cookie';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const Profile = () =>{
-
+    
+  const cookies = new Cookies();
+    const token = cookies.get('jwt_authorization');
+    
     const [reviewList, setReviewList] = useState([]);
     const [userData, setUserData] = useState(null);
 
@@ -14,7 +18,7 @@ const Profile = () =>{
             const response = await fetch(apiUrl + "/profile", {
               method: "GET",
               headers: { "Content-Type": "application/json",
-              "Authorization": `Bearer ${placeholder}`
+              "Authorization": `Bearer ${token}`
             },
             });
             if (response.ok) {

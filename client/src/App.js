@@ -8,12 +8,12 @@ import DisplayPlayer from './components/DisplayPlayer';
 import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
+import Profile from './components/Profile';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [playerData, setPlayerData] = useState(null);
-
 
   const handleContributeClick = () => {
     setCurrentPage('contribute');
