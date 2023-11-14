@@ -57,7 +57,6 @@ const Contribute = ({ handleSearchSuccess}) => {
             return;
         }
         try {
-
             const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
             const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",

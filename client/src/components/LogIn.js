@@ -5,19 +5,18 @@ import Cookies from 'js-cookie';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const LogIn = () => {
-  const { login } = useAuth();
+
   const [ email_address, setEmail_address ] = useState("");
   const [ password, setPassword ] = useState("");
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
     try {
+      
       const body = { email_address, password }
       const response = await fetch(apiUrl + "/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(body)
     });
     if (response.ok){

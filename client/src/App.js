@@ -38,9 +38,8 @@ const App = () => {
         return <LogIn/>;
       case 'signup':
         return <SignUp/>;
-        case 'profile':
-          // Check if the user is authenticated before rendering the profile
-          return user ? <Profile /> : <LogIn/>;  
+      case 'profile':
+        return <Profile/>
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
       default:
