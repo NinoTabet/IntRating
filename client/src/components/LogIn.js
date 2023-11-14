@@ -1,6 +1,6 @@
 //LoginSignup
 import React, { useState } from 'react';
-import { useAuth } from '../AuthProvider';
+import Cookies from 'js-cookie';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -20,12 +20,11 @@ const LogIn = () => {
       },
       body: JSON.stringify(body)
     });
-    if (response.ok) {
+    if (response.ok){
       const { token } = await response.json();
-      login(token);
-    } else {
-      const errorData = await response.json();
-      console.error("Login failed:", errorData.message);
+      Cookies.set("jwt_authorization", token);
+    }else {
+      alert("Login failed. Please try again.");
     }
     } catch (err) {
       console.error(err.message);

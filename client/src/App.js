@@ -9,14 +9,11 @@ import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
 import Profile from './components/Profile';
-import { useAuth } from './AuthProvider';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [playerData, setPlayerData] = useState(null);
-
-  const { user } = useAuth(); 
 
   const handleContributeClick = () => {
     setCurrentPage('contribute');

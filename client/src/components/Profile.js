@@ -1,12 +1,14 @@
 // profile.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../AuthProvider';
+import Cookies from 'universal-cookie';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const Profile = () =>{
-    const { user, logout } = useAuth();
-    const { token } = useAuth();
+    
+  const cookies = new Cookies();
+    const token = cookies.get('jwt_authorization');
+    
     const [reviewList, setReviewList] = useState([]);
     const [userData, setUserData] = useState(null);
 

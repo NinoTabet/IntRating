@@ -1,9 +1,21 @@
 import SearchBar from './SearchBar';
+import Cookies from 'js-cookie';
 
 const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
   const handleNavigation = (page) => {
     console.log('Changing page to', page);
-    setCurrentPage(page);
+    if (page === 'logout') {
+      try {
+        Cookies.remove("jwt_authorization");
+        alert("You've been logged out.");
+        setCurrentPage('home'); // or any other page you want to redirect to
+      } catch (err) {
+        console.error(err.message);
+      }
+    } else {
+      console.log('Changing page to', page);
+      setCurrentPage(page);
+    }
   };
  
   return (
@@ -53,6 +65,15 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
                   onClick={() => handleNavigation('profile')}
                 >
                   Profile
+                </a>
+                </li>
+                <li className="nav-item">
+                <a
+                  href="#"
+                  className={`nav-link px-2 text-light ${currentPage === 'logout' ? 'link-secondary' : ''}`}
+                  onClick={() => handleNavigation('logout')}
+                >
+                  LogOut
                 </a>
               </li>
             </ul> 

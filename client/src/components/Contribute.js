@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import ServerListNames from './ServerListNames';
 import ContributionStars from './ContributionStars';
-import { useAuth } from '../AuthProvider';
+import Cookies from 'universal-cookie';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
 const Contribute = ({ handleSearchSuccess}) => {
-    
-    const { token } = useAuth();
-    console.log(token);
+
+    // Get the JWT token from the cookie
+    const cookies = new Cookies();
+    const token = cookies.get('jwt_authorization');
+
     // all main input fields for rating
     const [ original_username, setOriginal_username ] = useState("");
     const [ creep_score, setCreep_score ] = useState("");
