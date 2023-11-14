@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import ServerListNames from './ServerListNames';
 import ContributionStars from './ContributionStars';
+import { useAuth } from '../AuthProvider';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
 const Contribute = ({ handleSearchSuccess}) => {
-
+    
+    const { token } = useAuth();
+    console.log(token);
     // all main input fields for rating
     const [ original_username, setOriginal_username ] = useState("");
     const [ creep_score, setCreep_score ] = useState("");
@@ -52,12 +55,13 @@ const Contribute = ({ handleSearchSuccess}) => {
             return;
         }
         try {
+
             const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
             const post_response = await fetch(apiUrl + "/rating", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${placeholder}`
+                "Authorization": `Bearer ${token}`
               },
             body: JSON.stringify(body)
         });

@@ -1,10 +1,12 @@
 // profile.js
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../AuthProvider';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const Profile = () =>{
-
+    const { user, logout } = useAuth();
+    const { token } = useAuth();
     const [reviewList, setReviewList] = useState([]);
     const [userData, setUserData] = useState(null);
 
@@ -14,7 +16,7 @@ const Profile = () =>{
             const response = await fetch(apiUrl + "/profile", {
               method: "GET",
               headers: { "Content-Type": "application/json",
-              "Authorization": `Bearer ${placeholder}`
+              "Authorization": `Bearer ${token}`
             },
             });
             if (response.ok) {
@@ -41,6 +43,7 @@ const Profile = () =>{
             </li>
         </ul>
         </div>
+        <button onClick={logout}>Logout</button>
     </>
   );
 };
