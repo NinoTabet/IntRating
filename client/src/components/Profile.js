@@ -45,7 +45,6 @@ const Profile = () =>{
             </li>
         </ul>
         </div>
-        <button onClick={logout}>Logout</button>
     </>
   );
 };
