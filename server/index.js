@@ -61,7 +61,6 @@ app.post("/rating", verifyToken, async (req, res) => {
         "INSERT INTO player (original_username, lower_username, server_id) VALUES($1, LOWER($2), (SELECT server_id FROM server WHERE server_name = $3)) RETURNING player_id",
         [original_username, original_username, server_name]
       );
-
         // Extract player_id from the result
         player_id = newPlayer.rows[0].player_id;
     } else {
@@ -88,10 +87,18 @@ app.post("/rating", verifyToken, async (req, res) => {
       return res.status(400).json({ message: "All scores must be between 1 and 5." });
     }
     
-    // Input into the ratings table with the request info
-    const rating = await pool.query(
-      "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again, review) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *",
-      [
+    const checkPreviousRating = await pool.query(
+      "SELECT * FROM ratings WHERE player_id = $1 AND user_id = $2;",
+      [player_id,userId]
+    )
+
+    let rating; // Declare rating outside the try block to access it later
+
+    if (!checkPreviousRating.rows.length) {
+      // Input into the ratings table with the request info
+      rating = await pool.query(
+        "INSERT INTO ratings (player_id, user_id,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, play_again, review) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *",
+        [
           player_id,
           userId,
           creep_score,
@@ -105,16 +112,54 @@ app.post("/rating", verifyToken, async (req, res) => {
           carry_score,
           shot_calling_score,
           play_again,
-          review
-      ]
-    );
+          review,
+        ]
+      );
+    } else {
+      const updateRating = await pool.query(
+        `UPDATE ratings 
+        SET 
+          creep_score = $3,
+          map_awareness_score = $4,
+          team_fighting_score = $5,
+          feeding_score = $6,
+          toxicity_score = $7,
+          tilt_score = $8,
+          kindness_score = $9,
+          laning_score = $10,
+          carry_score = $11,
+          shot_calling_score = $12,
+          play_again = $13,
+          review = $14
+        WHERE player_id = $1 AND user_id = $2
+        RETURNING *`,
+        [
+          player_id,
+          userId,
+          creep_score,
+          map_awareness_score,
+          team_fighting_score,
+          feeding_score,
+          toxicity_score,
+          tilt_score,
+          kindness_score,
+          laning_score,
+          carry_score,
+          shot_calling_score,
+          play_again,
+          review,
+        ]
+      );
+      // Assign the updated rating to the variable
+      rating = updateRating;
+    }
 
-      // Check if the rating insertion was successful
-      if (rating.rows.length > 0) {
-          res.json(rating.rows[0]);
-      } else {
-          res.status(500).json("Failed to insert rating");
-      }
+    // Check if the rating insertion or update was successful
+    if (rating.rows.length > 0) {
+      res.json(rating.rows[0]);
+    } else {
+      res.status(500).json("Failed to insert/update rating");
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -122,38 +167,40 @@ app.post("/rating", verifyToken, async (req, res) => {
 });
 
 // profile info load
-app.get("/profile", verifyToken, async (req,res)=>{
- 
+app.get("/profile", verifyToken, async (req, res) => {
   // userId associated with the token
   const userId = req.user.userId;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized request. Please log in before performing this action." });
   }
- 
+
   try {
-    
     // searches for all reviews associated with the userId found in the jwt
     const reviewSearch = await pool.query(
-      "SELECT * FROM ratings WHERE user_id = $1",
+      "SELECT r.*, u.username AS reviewer_username, p.original_username AS reviewed_username " +
+      "FROM ratings r " +
+      "JOIN user_accounts u ON r.user_id = u.user_id " +
+      "JOIN player p ON r.player_id = p.player_id " +
+      "WHERE r.user_id = $1",
       [userId]
-    ); 
+    );
 
     const usernameSearch = await pool.query(
       "SELECT username FROM user_accounts WHERE user_id = $1",
       [userId]
-    ); 
+    );
 
     const responseData = {
-     // reviewSearch: reviewSearch.rows[0], // correct this shit later
+      reviewSearch: reviewSearch.rows,
       usernameSearch: usernameSearch.rows[0],
     };
 
     res.json(responseData);
-
   } catch (error) {
     return res.status(400).json({ message: "Unauthorized request. " });
   }
 });
+
 
 // !!---------- After this line, jwt is not needed ----------!!
 
@@ -416,10 +463,9 @@ app.post("/login", async(req, res)=>{
     const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
     if (passwordMatch) {
       const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '6h' });
-      res.status(200).json({ message: "Login successful", token }); //remove token from 200 response after testing
-      console.log("Login successful! your token is: " + token )
+      res.status(200).json({ message: "Log in successful.", token: token });
+      return token;
     } else {
-      // If passwords do not match, respond with an error
       res.status(401).json({ message: "Invalid password" });
     }
   } catch (error) {

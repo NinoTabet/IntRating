@@ -2,41 +2,43 @@
 import React, { useState } from 'react';
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const SignUp = () => {
+const SignUp = ({ setCurrentPage }) => {
 
-    const [email_address, setEmail_address] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+  const [email_address, setEmail_address] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-    const onSubmitForm = async (e) => {
-        e.preventDefault();
-        try {
+  const onSubmitForm = async (e) => {
+      e.preventDefault();
+      try {
           const body = { email_address, username, password };
           const response = await fetch(apiUrl + "/signup", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
           });
 
           if (!response.ok) {
-            const errorData = await response.json();
-            alert(errorData.error); // Show the error message in an alert
-            return;
+              const errorData = await response.json();
+              alert(errorData.error); // Show the error message in an alert
+              return;
+          } else {
+              alert("Yay! You've signed up. Time to log in!");
+              setCurrentPage("login");
           }
-          // Handle success, e.g., redirect or show success message
-        } catch (err) {
+          // Handle success, e.g., redirect or show a success message
+      } catch (err) {
           console.error("Error:", err.message);
-          alert('An error occurred while trying to submit your feedback. Please try again.');
-        }
-      };   
+          alert(err);
+      }
+  };
 
   return (
     <>
         <div className="container mt-lg-5 middle_page w-50">
             <div className='text-center '>
                 <h1 className='text-center text-dark'>Signup</h1>
-                <p className='mt-5'>Please use a real email address as there is a confirmation code that will be sent!</p>
-                <p>Also, include at least one capital letter, one number, and one special character in your password.</p>    
+                <p className='mt-5'>Please include at least one capital letter, one number, and one special character in your password!</p> 
             </div>    
             <div className='text-center container mt-5'>
                 <form onSubmit={onSubmitForm}>

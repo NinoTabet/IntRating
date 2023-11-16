@@ -1,27 +1,37 @@
 //LoginSignup
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
+
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const LogIn = () => {
+const LogIn = ({ setCurrentPage }) => {
 
-  const [ email_address, setEmail_address ] = useState("");
-  const [ password, setPassword ] = useState("");
+  const [email_address, setEmail_address] = useState("");
+  const [password, setPassword] = useState("");
 
   const onSubmitForm = async (e) => {
-    e.preventDefault();
-    try {
-      
-      const body = { email_address, password }
-      const response = await fetch(apiUrl + "/login", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(body)
-    });
+      e.preventDefault();
+      try {
 
-    } catch (err) {
-      console.error(err.message);
-    }
-  }
+          const body = { email_address, password }
+          const response = await fetch(apiUrl + "/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body)
+          });
+          if (response.ok) {
+              const { token } = await response.json();
+              Cookies.set("jwt_authorization", token);
+              alert("You are now logged in!");
+              setCurrentPage("home");
+          } else {
+              alert("Login failed. Please try again.");
+          }
+      } catch (err) {
+          console.error(err.message);
+      }
+  };
+
   return (
     <>
       <div className="container mt-lg-5 middle_page mx-auto w-50">

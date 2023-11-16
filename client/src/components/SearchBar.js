@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import ServerListNames from "./ServerListNames";
 
-const apiUrl = process.env.REACT_APP_API_URL.replace(/\/$/, '');
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const SearchBar = ({ handleSearchSuccess }) => {
   const [ original_username, setOriginal_username ] = useState("");
