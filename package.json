@@ -4,5 +4,9 @@
     "main": "server/index.js",
     "scripts": {
         "start": "node server/index.js"
+    },
+    "dependencies": {
+        "js-cookie": "^3.0.5",
+        "universal-cookie": "^6.1.1"
     }
 }
