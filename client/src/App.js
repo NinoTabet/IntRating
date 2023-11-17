@@ -8,12 +8,12 @@ import DisplayPlayer from './components/DisplayPlayer';
 import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
+import Profile from './components/Profile';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [playerData, setPlayerData] = useState(null);
-
 
   const handleContributeClick = () => {
     setCurrentPage('contribute');
@@ -27,7 +27,7 @@ const App = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
-        return <Home handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
+        return <Home setCurrentPage={setCurrentPage} handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
       case 'contribute':
         return <Contribute handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
       case 'contact':
@@ -35,9 +35,9 @@ const App = () => {
       case 'loginsignup':
         return <LoginSignup setCurrentPage={setCurrentPage}/>;
       case 'login':
-        return <LogIn/>;
+        return <LogIn setCurrentPage={setCurrentPage}/>;
       case 'signup':
-        return <SignUp/>;
+        return <SignUp setCurrentPage={setCurrentPage}/>;
       case 'profile':
         return <Profile/>
       case 'displayPlayer':

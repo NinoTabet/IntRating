@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import ServerListNames from './ServerListNames';
 import ContributionStars from './ContributionStars';
+import Cookies from 'universal-cookie';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
 const Contribute = ({ handleSearchSuccess}) => {
+
+    // Get the JWT token from the cookie
+    const cookies = new Cookies();
+    const token = cookies.get('jwt_authorization');
 
     // all main input fields for rating
     const [ original_username, setOriginal_username ] = useState("");
@@ -57,7 +62,7 @@ const Contribute = ({ handleSearchSuccess}) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${placeholder}`
+                "Authorization": `Bearer ${token}`
               },
             body: JSON.stringify(body)
         });

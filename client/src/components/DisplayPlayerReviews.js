@@ -1,6 +1,6 @@
 import React from "react";
 
-const Review = ({ review }) => {
+const DisplayPlayerReviews = ({ review }) => {
   const getHighestRatedField = () => {
     const fields = [
       'creep_score',
@@ -83,4 +83,4 @@ const Review = ({ review }) => {
   );    
 };
 
-export default Review;
+export default DisplayPlayerReviews;
