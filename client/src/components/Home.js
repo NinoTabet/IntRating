@@ -52,7 +52,7 @@ const Home = ({ setCurrentPage, handleSearchSuccess }) => {
           Contribute rating
         </button>
         <h5 className="mt-2">OR</h5>
-        <SearchBar />
+        <SearchBar handleSearchSuccess={handleSearchSuccess}/>
       </div>
       <div className="bottom-nav fixed-bottom d-flex align-items-center justify-content-center mb-1">
       </div>
