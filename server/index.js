@@ -407,23 +407,18 @@ app.get("/total_ratings", async (req, res) => {
 });
 
 // text review for displayplayer
-app.get("/api/text_review", async(req, res)=>{
-
+app.get("/api/text_review", async (req, res) => {
   try {
-    const { original_username, server_name }  = req.body;
-    const player_id_result = await pool.query(
-      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+    const { original_username, server_name } = req.query;
+    const reviews = await pool.query(
+      "SELECT * FROM ratings WHERE player_id = (SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2))",
       [original_username, server_name]
-    );
-  
-    const text_reviews = await pool.query(
-      "SELECT * FROM ratings WHERE player_id =$1 ",
-      [player_id_result]
-    )
-  
-    res.json(text_reviews);
+    );    
+
+    res.json({reviews});
   } catch (error) {
-    return res.status(400).json({ message: "Unauthorized request. " + error });
+    console.error('Error fetching player reviews:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 
 });

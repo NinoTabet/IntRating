@@ -1,86 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const DisplayPlayerReviews = ({ review }) => {
-  const getHighestRatedField = () => {
-    const fields = [
-      'creep_score',
-      'map_awareness_score',
-      'team_fighting_score',
-      'feeding_score',
-      'toxicity_score',
-      'tilt_score',
-      'kindness_score',
-      'laning_score',
-      'carry_score',
-      'shot_calling_score',
-    ];
-    const highestField = fields.reduce((highest, field) => {
-      return review[field] > review[highest] ? field : highest;
-    }, fields[0]);
+const apiUrl = process.env.REACT_APP_API_URL;
 
-    return highestField;
-  };
+const DisplayPlayerReviews = ({ username, serverName }) => {
+  const [reviews, setReviews] = useState([]);
 
-  const getLowestRatedField = () => {
-    const fields = [
-      'creep_score',
-      'map_awareness_score',
-      'team_fighting_score',
-      'feeding_score',
-      'toxicity_score',
-      'tilt_score',
-      'kindness_score',
-      'laning_score',
-      'carry_score',
-      'shot_calling_score',
-    ];
-    const lowestField = fields.reduce((lowest, field) => {
-      return review[field] < review[lowest] ? field : lowest;
-    }, fields[0]);
+  useEffect(() => {
+    const fetchPlayerReviews = async () => {
+      try {
+        // Make API call to fetch player reviews
+        const response = await fetch(apiUrl + `/api/text_review?original_username=${username}&server_name=${serverName}`);
 
-    return lowestField;
-  };
+        if (!response.ok) {
+          throw new Error("Failed to fetch player reviews");
+        }
 
-  const calculateOverallRating = () => {
-    const fields = [
-      'creep_score',
-      'map_awareness_score',
-      'team_fighting_score',
-      'feeding_score',
-      'toxicity_score',
-      'tilt_score',
-      'kindness_score',
-      'laning_score',
-      'carry_score',
-      'shot_calling_score',
-    ];
+        const data = await response.json();
+        console.log("Fetched reviews data:", data); // Add this line for debugging
+        setReviews(data.reviews);
+      } catch (error) {
+        console.error("Error fetching player reviews:", error.message);
+      }
+    };
 
-    const totalScore = fields.reduce((sum, field) => sum + review[field], 0);
-    const overallRating = totalScore / fields.length;
+    // Call the function to fetch reviews
+    fetchPlayerReviews();
+  }, [username, serverName]);
 
-    return overallRating.toFixed(2);
-  };
-
-  const highestRatedField = getHighestRatedField();
-  const lowestRatedField = getLowestRatedField();
-  const overallRating = calculateOverallRating();
-
-  // Convert the play_again rating to "Yes" or "No"
-  const playAgainText = review.play_again === 5 ? 'Yes' : 'No';
+  console.log("Reviews state:", reviews); // Add this line for debugging
 
   return (
-    <div className="card">
-      <div className="card-body" style={{ textAlign: 'left' }}>
-        <p className="card-title"><span className="fw-bold"></span>{review.reviewed_username}</p>
-        <p className="card-text"><span className="fw-bold">Overall Rating: </span>{overallRating}</p>
-        <p className="card-text"><span className="fw-bold">Highest Rated Field: </span>{highestRatedField}: {review[highestRatedField]}</p>
-        <p className="card-text"><span className="fw-bold">Lowest Rated Field: </span>{lowestRatedField}: {review[lowestRatedField]}</p>
-        <p className="card-text"><span className="fw-bold">Play Again: </span>{playAgainText}</p>
-        {review.review && <p className="card-text"><span className="fw-bold">Review: </span>{review.review}</p>}
-        {/* <p className="card-text">Date: {new Date(review.date).toLocaleDateString()}</p> */}
-      </div>
+    <div className="reviews-container">
+      <h2>Player Reviews</h2>
+      {reviews.map((review) => (
+        <div key={review.rating_id} className="review-card">
+          <h3>Username: {review.username}</h3>
+          <p>Highest Rated Field: {review.highestRatedField}</p>
+          <p>Highest Rated Score: {review.highestRatedScore}</p>
+          <p>Lowest Rated Field: {review.lowestRatedField}</p>
+          <p>Lowest Rated Score: {review.lowestRatedScore}</p>
+          <p>Would Play Again: {review.playAgain}</p>
+          {review.textReview && <p>Text Review: {review.textReview}</p>}
+        </div>
+      ))}
     </div>
-  );    
+  );
 };
 
 export default DisplayPlayerReviews;
