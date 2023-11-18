@@ -29,20 +29,24 @@ const SearchBar = ({ handleSearchSuccess }) => {
   };
 
   return (
-    <form className="d-flex" onSubmit={onSubmitForm}>
+  <form className="d-flex flex-column flex-md-row" onSubmit={onSubmitForm}>
+    <div className="mb-2 mb-md-0 me-md-1">
       <input
         type="search"
-        className="form-control text-bg-light btn-lg me-1"
+        className="form-control text-bg-light"
         placeholder="Player name..."
         aria-label="Search"
         value={original_username}
         onChange={(e) => setOriginal_username(e.target.value)}
       />
+    </div>
+    <div className="text-center">
       <ServerListNames selectedServer={selectedServer} setSelectedServer={setSelectedServer} />
-      <button className="btn btn-dark text-light btn-sm" type="submit">
+      <button className="btn btn-dark text-light" type="submit">
         Search
       </button>
-    </form>
+    </div>
+  </form>
   );
 };
 
