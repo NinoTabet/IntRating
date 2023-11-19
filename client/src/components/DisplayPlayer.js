@@ -269,7 +269,7 @@ const DisplayPlayer = (props) => {
   // Render JSX
     return (
         <>
-            <div className="text-center">
+            <div className="text-center pb-5">
                 <h1 className="mb-3">{original_username}</h1>
                 <h5 className="mb-3">{server_name}</h5>
                 <div>

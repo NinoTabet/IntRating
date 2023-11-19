@@ -106,7 +106,7 @@ const DisplayPlayerReviews = ({ username, server_name }) => {
       <h2 className="mb-5 text-center">Player Reviews</h2>
       <div className="row justify-content-center">
         {data && data.reviews && data.reviews.length > 0 ? (
-          <div className="col-md-5">
+          <div className="col-md-5 border rounded px-3 pt-1">
             <div className="reviews-container" style={{ maxHeight: '500px', overflowY: 'auto' }} >
               {data.reviews.map((review, index) => (
                 <div key={index} className="card-container w-100 mb-3">
