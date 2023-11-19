@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../DisplayPlayer.css"
+import "../DisplayPlayer.css";
 import DisplayPlayerReviews from "./DisplayPlayerReviews";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -375,10 +375,7 @@ const DisplayPlayer = (props) => {
                         </div>
                     </div>
                 </div>
-                <DisplayPlayerReviews
-                username={original_username}
-                serverName={server_name}
-                />
+                <DisplayPlayerReviews username={original_username} server_name={server_name} />
             </div>
         </>
     );

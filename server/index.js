@@ -406,21 +406,33 @@ app.get("/total_ratings", async (req, res) => {
   }
 });
 
-// text review for displayplayer
 app.get("/api/text_review", async (req, res) => {
   try {
-    const { original_username, server_name } = req.query;
+    const { username, server_name } = req.query;
+
     const reviews = await pool.query(
       "SELECT * FROM ratings WHERE player_id = (SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2))",
-      [original_username, server_name]
-    );    
+      [username, server_name]
+    );
 
-    res.json({reviews});
+    const usernames = await pool.query(
+      "SELECT username FROM user_accounts WHERE user_id = (SELECT user_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2))",
+      [username, server_name]
+    );
+
+    // Extract the usernames from the result
+    const userNamesList = usernames.rows.map(user => user.username);
+
+    // Combine the reviews and usernames in the response
+    const responseData = {
+      reviews: reviews.rows,
+      usernames: userNamesList,
+    };
+
+    res.json(responseData);
   } catch (error) {
-    console.error('Error fetching player reviews:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-
 });
 
 // user signup api
