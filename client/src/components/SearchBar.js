@@ -29,7 +29,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
   };
 
   return (
-  <form className="d-flex flex-column flex-md-row" onSubmit={onSubmitForm}>
+  <form className="d-flex flex-column flex-md-row mx-auto text-center" onSubmit={onSubmitForm}>
     <div className="mb-1 me-md-1">
       <input
         type="search"
@@ -40,7 +40,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
         onChange={(e) => setOriginal_username(e.target.value)}
       />
     </div>
-    <div className="text-center">
+    <div>
       <ServerListNames selectedServer={selectedServer} setSelectedServer={setSelectedServer} />
       <button className="btn btn-dark text-light" type="submit">
         Search
