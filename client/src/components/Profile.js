@@ -38,11 +38,12 @@ const Profile = () => {
   }, [token]);
 
   return (
-  <>
-    <div className='d-flex flex-column align-items-center justify-content-center vh-100'>
+<>
+  <div className="container w-100vw d-flex align-items-center justify-content-center pt-5" style={{ height: '75vh' }}>
+    <div className="w-75 text-center mt-5">
       <h1>{userData ? `${userData.usernameSearch.username}` : 'Loading...'}</h1>
       <h2 className='mt-5'>Your reviews</h2>
-      <div className='mt-5 card-container w-50' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+      <div className='mt-5 card-container mx-auto' style={{ maxHeight: '500px', overflowY: 'auto' }}>
         {reviewList && reviewList.reverse().map((review) => (
           <div key={review.rating_id} className="mb-3">
             <Review review={review} />
@@ -50,7 +51,9 @@ const Profile = () => {
         ))}
       </div>
     </div>
-  </>
+  </div>
+</>
+
   );
 };
 

@@ -21,7 +21,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
         const data = await response.json();
         handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, playerData: data });
       }else{
-        alert('Player not found in databse. Be the first to rate '+original_username+'!');
+        alert('Player not found in database. Be the first to rate '+original_username+'!');
       }
     } catch (err) {
       console.error("Error:", err.message);
@@ -30,7 +30,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
 
   return (
   <form className="d-flex flex-column flex-md-row" onSubmit={onSubmitForm}>
-    <div className="mb-2 mb-md-0 me-md-1">
+    <div className="mb-1 me-md-1">
       <input
         type="search"
         className="form-control text-bg-light"
