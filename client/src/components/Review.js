@@ -53,6 +53,7 @@ const Review = ({ review }) => {
       'laning_score',
       'carry_score',
       'shot_calling_score',
+      'play_again',
     ];
 
     const totalScore = fields.reduce((sum, field) => sum + review[field], 0);

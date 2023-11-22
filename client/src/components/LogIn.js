@@ -34,22 +34,24 @@ const LogIn = ({ setCurrentPage }) => {
 
   return (
     <>
-      <div className="container mt-lg-5 middle_page mx-auto w-50">
+      <div className="container mx-auto w-100vw d-flex align-items-center justify-content-center" style={{ height: '75vh' }}>
+        <div className="w-50">
         <h1 className='text-center text-dark'>Login</h1>
         <div className='text-center mt-5'>
           <form onSubmit={onSubmitForm}>
-            <div className="form-group w-md-100 w-lg-50 mx-auto">
+            <div className="form-group col-12 col-md-7 mx-auto">
               <label htmlFor="email">Email address</label>
               <input type="email" className="form-control text-center" id="email" placeholder="Enter your email" value={email_address}
               onChange={(e) => setEmail_address(e.target.value)}/>
             </div>
-            <div className="form-group w-md-100 w-lg-50 mx-auto mt-3">
+            <div className="form-group col-12 col-md-7 mx-auto mt-3">
               <label htmlFor="password">Password</label>
               <input type="password" className="form-control text-center" id="password" placeholder="Enter your password" value={password}
               onChange={(e) => setPassword(e.target.value)}/>
             </div>
-            <button type="submit" className="btn btn-primary mt-5">Login</button>
+            <button type="submit" className="btn btn-dark mt-5">Login</button>
           </form>
+        </div>
         </div>
       </div>
     </>

@@ -10,7 +10,7 @@ const LoginSignup = ({ currentPage, setCurrentPage }) => {
 return (
   <>
     <div className="container mt-lg-5 middle_page w-50">
-    <h1 className='text-center text-dark'>Login or Signup!</h1>
+    <h1 className='text-center text-dark'>Signup or Login!</h1>
         <div className='text-center mt-5 justify-content-center d-flex'>
             <button
                 type="button"

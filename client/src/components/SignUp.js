@@ -35,7 +35,8 @@ const SignUp = ({ setCurrentPage }) => {
 
   return (
     <>
-        <div className="container mt-lg-5 middle_page w-50">
+        <div className="container mx-auto w-100vw d-flex align-items-center justify-content-center" style={{ height: '75vh' }}>
+        <div className="w-50">
             <div className='text-center '>
                 <h1 className='text-center text-dark'>Signup</h1>
                 <p className='mt-5'>Please include at least one capital letter, one number, and one special character in your password!</p> 
@@ -59,6 +60,7 @@ const SignUp = ({ setCurrentPage }) => {
                     </div>
                     <button type="submit" class="btn btn-dark mt-5">Signup</button>
                 </form>
+            </div>
             </div>
         </div>
     </>

@@ -31,29 +31,33 @@ const Contact = () => {
     };   
 
     return (
-        <div className="container mt-5 middle_page w-50">
-            <h1 className="text-center">FEEDBACK FORM</h1>
-            <div className="mt-5">
-                <form className="mt-3" onSubmit={onSubmitForm}>
-                    <div className="row justify-content-center mt-5">
-                        <div className="col-md-6 text-center">
-                            <div className="form-group">
-                                <textarea
-                                    className="form-control text-center text-body mt-2"
-                                    rows="4"
-                                    placeholder="Enter your feedback"
-                                    value={feedback || ''}
-                                    onChange={(e) => setFeedback(e.target.value)}
-                                ></textarea>
+        <div className="container mx-auto w-100vw d-flex align-items-center justify-content-center" style={{ height: '75vh' }}>
+            <div className="w-50 text-center">
+                <div className="d-flex justify-content-center">
+                <h1 className="text-nowrap">FEEDBACK FORM</h1>
+                </div>
+                <div className="mt-5">
+                    <form className="mt-3" onSubmit={onSubmitForm}>
+                        <div className="row justify-content-center mt-5">
+                            <div className="col-md-6 text-center">
+                                <div className="form-group">
+                                    <textarea
+                                        className="form-control text-center text-body mt-2"
+                                        rows="4"
+                                        placeholder="Enter your feedback"
+                                        value={feedback || ''}
+                                        onChange={(e) => setFeedback(e.target.value)}
+                                    ></textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="row justify-content-center mt-5">
-                        <div className="col-md-6 text-center">
-                            <button className="btn btn-dark text-light btn-lg" type="submit">Submit</button>
+                        <div className="row justify-content-center mt-5">
+                            <div className="col-md-6 text-center">
+                                <button className="btn btn-dark text-light btn-lg" type="submit">Submit</button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

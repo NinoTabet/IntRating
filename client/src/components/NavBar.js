@@ -58,7 +58,7 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
                     }`}
                     onClick={() => handleNavigation('loginsignup')}
                   >
-                    Sign up / Log in 
+                    Sign up & Log in 
                   </a>
                 </li>
                 
@@ -113,7 +113,7 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
               )}
             </ul>
           </div>
-          <div className="ms-auto mb-auto">
+          <div className="ms-auto">
             <SearchBar handleSearchSuccess={handleSearchSuccess} />
           </div>
         </div>

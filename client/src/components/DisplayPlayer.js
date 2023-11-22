@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../DisplayPlayer.css"
+import "../DisplayPlayer.css";
+import DisplayPlayerReviews from "./DisplayPlayerReviews";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -198,7 +199,7 @@ const DisplayPlayer = (props) => {
     }
 };
 
-    const { original_username, server_name } = props.playerData;
+    const { original_username, server_name, tag_line } = props.playerData;
 
     const [updatedData, setUpdatedData] = useState(null);
     const updateAndFetchData = async () => {
@@ -212,6 +213,7 @@ const DisplayPlayer = (props) => {
                 body: JSON.stringify({
                     original_username: original_username,
                     server_name: server_name,
+                    tag_line: tag_line,
                 }),
             });
 
@@ -221,7 +223,7 @@ const DisplayPlayer = (props) => {
             }
 
             // Fetch the updated data (GET request)
-            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?original_username=${original_username}&server_name=${server_name}`);
+            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?original_username=${original_username}&server_name=${server_name}&tag_line=${tag_line}`);
 
             // Check if fetching the data was successful
             if (!fetchDataResponse.ok) {
@@ -268,7 +270,7 @@ const DisplayPlayer = (props) => {
   // Render JSX
     return (
         <>
-            <div className="text-center">
+            <div className="text-center pb-5">
                 <h1 className="mb-3">{original_username}</h1>
                 <h5 className="mb-3">{server_name}</h5>
                 <div>
@@ -278,25 +280,25 @@ const DisplayPlayer = (props) => {
                         <label className="mb-2">Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></label>
                     </div>
                 </div>
-                <div className="row justify-content-center mb-3 mt-5">
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                <div className="row justify-content-center mt-0 mt-md-5">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Cs'ing</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Map Awareness</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Team Fighting</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</p>
@@ -304,25 +306,25 @@ const DisplayPlayer = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="row justify-content-center mb-3 mt-5">
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                <div className="row justify-content-center mt-0 mt-md-5">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Intentional Feeding</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Toxicity</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Tiltability</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</p>
@@ -330,25 +332,25 @@ const DisplayPlayer = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="row justify-content-center mb-3 mt-5">
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                <div className="row justify-content-center mt-0 mt-md-5">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Kindness</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Laning / Jungling</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Carry-ability</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</p>
@@ -356,17 +358,17 @@ const DisplayPlayer = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="row justify-content-center mb-3 mt-5">
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                <div className="row justify-content-center mt-0 mt-md-5">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Shot calling</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</p>
                             <p>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</p>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group text-center">
+                    <div className="col-12 col-md-2 mt-4 mt-md-0">
+                        <div className="form-group text-center mt-2 mt-md-1">
                             <label className="mb-2 h5">Play again?</label>
                             <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small></p>
                             <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</p>
@@ -374,6 +376,10 @@ const DisplayPlayer = (props) => {
                         </div>
                     </div>
                 </div>
+                <div className="text-center mt-4">
+                    <div className="border col-9 col-md-5 mx-auto"/>
+                </div>
+                <DisplayPlayerReviews username={original_username} server_name={server_name} />
             </div>
         </>
     );
