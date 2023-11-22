@@ -199,7 +199,7 @@ const DisplayPlayer = (props) => {
     }
 };
 
-    const { original_username, server_name } = props.playerData;
+    const { original_username, server_name, tag_line } = props.playerData;
 
     const [updatedData, setUpdatedData] = useState(null);
     const updateAndFetchData = async () => {
@@ -213,6 +213,7 @@ const DisplayPlayer = (props) => {
                 body: JSON.stringify({
                     original_username: original_username,
                     server_name: server_name,
+                    tag_line: tag_line,
                 }),
             });
 
@@ -222,7 +223,7 @@ const DisplayPlayer = (props) => {
             }
 
             // Fetch the updated data (GET request)
-            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?original_username=${original_username}&server_name=${server_name}`);
+            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?original_username=${original_username}&server_name=${server_name}&tag_line=${tag_line}`);
 
             // Check if fetching the data was successful
             if (!fetchDataResponse.ok) {

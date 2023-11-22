@@ -43,29 +43,41 @@ function verifyToken(req, res, next) {
 // player rating logic
 app.post("/rating", verifyToken, async (req, res) => {
   try {
-    const { original_username, server_name } = req.body;
-
+    const { full_username, server_name } = req.body;
     const userId = req.user.userId;
     if (!userId) {
       return res.status(401).json({ message: "Invalid user ID" });
     }
 
+    // Extract username and tag_line from full_username
+    let original_username, tag_line;
+    try {
+      [original_username, tag_line] = extractUsernameAndTagline(full_username);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    console.log("username: "+original_username + " tagline: "+tag_line);
     // Check if player in the specified server exists
     const playerCheck = await pool.query(
-        "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-        [original_username, server_name]
+      "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
+      [original_username, server_name, tag_line]
     );
+
+    let player_id;
+
     // Create a new player if no player exists
     if (playerCheck.rows.length === 0) {
-        const newPlayer = await pool.query(
-        "INSERT INTO player (original_username, lower_username, server_id) VALUES($1, LOWER($2), (SELECT server_id FROM server WHERE server_name = $3)) RETURNING player_id",
-        [original_username, original_username, server_name]
+      const newPlayer = await pool.query(
+        "INSERT INTO player (original_username, lower_username, tag_line, server_id) VALUES($1, LOWER($2), UPPER($3), (SELECT server_id FROM server WHERE server_name = $4)) RETURNING player_id",
+        [original_username, original_username, tag_line, server_name]
       );
-        // Extract player_id from the result
-        player_id = newPlayer.rows[0].player_id;
+
+      // Extract player_id from the result
+      player_id = newPlayer.rows[0].player_id;
     } else {
-        // Player already exists, get player_id from the check result
-        player_id = playerCheck.rows[0].player_id;
+      // Player already exists, get player_id from the check result
+      player_id = playerCheck.rows[0].player_id;
     }
     const {
         creep_score,
@@ -209,18 +221,26 @@ app.get("/search", async (req, res) => {
     try {
       console.log("Search route hit");
   
-      const { original_username, server_name } = req.query;
+      const { full_username, server_name } = req.query;
   
+         // Extract username and tag_line from full_username
+    let original_username, tag_line;
+    try {
+      [original_username, tag_line] = extractUsernameAndTagline(full_username);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
       // Note: You should adjust the SQL query to match your database schema
       const searchPlayer = await pool.query(
-      "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-        [original_username, server_name]
+      "SELECT original_username, tag_line FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
+        [original_username, server_name, tag_line]
       );
   
       if (searchPlayer.rows.length > 0) {
         // If a player is found, respond with the player details
         const playerFound = await pool.query(
-          "SELECT original_username FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+          "SELECT original_username, tag_line FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
           [original_username, server_name]
         )
         console.log(playerFound.rows[0])
@@ -247,12 +267,12 @@ app.get("/servers", async (req, res) => {
 // updates avg scores
 app.post("/api/update-averages", async (req, res) => {
   try {
-    const { original_username, server_name } = req.body;
+    const { original_username, server_name, tag_line } = req.body;
 
     // Locate player id
     const playerResult = await pool.query(
-      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-      [original_username, server_name]
+      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
+      [original_username, server_name, tag_line]
     );
     const player_id = playerResult.rows[0]?.player_id;
 
@@ -502,6 +522,20 @@ app.post("/login", async(req, res)=>{
     res.status(500).json({message:"Internal Server Error"});
   }
 });
+
+// Helper function to extract username and tag_line
+function extractUsernameAndTagline(fullUsername) {
+  const hashIndex = fullUsername.indexOf("#");
+
+  if (hashIndex !== -1) {
+    const originalUsername = fullUsername.substring(0, hashIndex);
+    const tag_line = fullUsername.substring(hashIndex + 1);
+    return [originalUsername, tag_line];
+  } else {
+    // If no tag_line is found, throw an error or return a value to indicate that it's required
+    throw new Error("Tagline is required for usernames with a '#'.");
+  }
+}
 
 // server port logic
 const port = process.env.PORT || 3000;

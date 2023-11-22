@@ -13,7 +13,7 @@ const Contribute = ({ handleSearchSuccess}) => {
     const token = cookies.get('jwt_authorization');
 
     // all main input fields for rating
-    const [ original_username, setOriginal_username ] = useState("");
+    const [ full_username, setOriginal_username ] = useState("");
     const [ creep_score, setCreep_score ] = useState("");
     const [ map_awareness_score, setMap_awareness_score ] = useState("");
     const [ team_fighting_score, setTeam_fighting_score ] = useState("");
@@ -38,7 +38,7 @@ const Contribute = ({ handleSearchSuccess}) => {
         e.preventDefault();
 
         const allFieldsFilled = (
-            original_username &&
+            full_username &&
             selectedServer &&
             creep_score !== "" &&
             map_awareness_score !== "" &&
@@ -57,16 +57,17 @@ const Contribute = ({ handleSearchSuccess}) => {
             return;
         }
         try {
-            const body = { original_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
+            const body = { full_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
+            console.log(body);
             const post_response = await fetch(apiUrl + "/rating", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-              },
-            body: JSON.stringify(body)
-        });
-            const url = apiUrl + `/search?original_username=${encodeURIComponent(original_username)}&server_name=${encodeURIComponent(selectedServer)}`;
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+            });
+            const url = apiUrl + `/search?full_username=${encodeURIComponent(full_username)}&server_name=${encodeURIComponent(selectedServer)}`;
             const get_response = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -74,8 +75,8 @@ const Contribute = ({ handleSearchSuccess}) => {
         console.log(post_response);
         if (post_response.ok) {
             const data = await get_response.json();
-            setPlayerData({ original_username: data.original_username, server_name: selectedServer });
-            handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, playerData: data });
+            setPlayerData({ original_username: data.original_username, server_name: selectedServer, tag_line : data.tag_line });
+            handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, tag_line : data.tag_line });
         }else{
             alert("Please log in before attempting to contribute a rating!");
         }
@@ -109,7 +110,7 @@ const Contribute = ({ handleSearchSuccess}) => {
                     className="form-control text-center"
                     id="playerName"
                     placeholder="Enter a name"
-                    value={original_username} onChange={e => setOriginal_username(e.target.value)}
+                    value={full_username} onChange={e => setOriginal_username(e.target.value)}
                     />
                 </div>
                 </div>
