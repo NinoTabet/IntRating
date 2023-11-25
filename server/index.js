@@ -551,7 +551,10 @@ app.get("/riot_api/player_search", async (req, res) => {
   const { gameName, tagLine, region } = req.query;
   try {
     const riotResponse = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`)
-    res.json(riotResponse.data);
+    const puuid = riotResponse.data.puuid; 
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${player_id}/ids?start=0&count=20}&api_key=${RIOT_API}`)
+    console.log(gamesResponse.data);
+    //res.json(gamesResponse.data);
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ message: 'Internal Server Error' });
