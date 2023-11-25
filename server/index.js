@@ -6,9 +6,12 @@ const pool = require("./db");
 const bcrypt = require('bcryptjs');
 const saltRounds = 12;
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 app.use(cors());
 app.use(express.json());
+
+const RIOT_API = process.env.RIOT_API;
 
 // middleware jwt auth
 function verifyToken(req, res, next) {
@@ -212,7 +215,6 @@ app.get("/profile", verifyToken, async (req, res) => {
     return res.status(400).json({ message: "Unauthorized request. " });
   }
 });
-
 
 // !!---------- After this line, jwt is not needed ----------!!
 
@@ -541,4 +543,17 @@ function extractUsernameAndTagline(fullUsername) {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server has started on port ${port}`);
+});
+
+// <----- Everything past this point, requires riot's api and is mainly used for testing ----->
+
+app.get("/riot_api/player_search'", async (req, res) => {
+  const {gameName, tagLine, region} = req.body;
+  try {
+    const riotResponse = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`)
+    res.json(riotResponse.data);
+  res.status(200).json({ message: '' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+}
 });
