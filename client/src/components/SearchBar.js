@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import ServerListNames from "./ServerListNames";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const RIOT_API = process.env.RIOT_API;
 
 const SearchBar = ({ handleSearchSuccess }) => {
   const [ full_username, setFull_Username ] = useState("");

@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-const RIOT_API = process.env.REACT_APP_RIOT_API;
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const Playground = () => {
   const [full_username, setFull_Username] = useState("");
@@ -8,7 +7,7 @@ const Playground = () => {
   const [tagLine, setTagLine] = useState("");
   const [region, setRegion] = useState("AMERICAS"); // Default region is set to AMERICAS
 
-  const onSubmitForm = (e) => {
+  const onSubmitForm = async (e) => {
     e.preventDefault();
     try {
       // Helper function to extract username and tag_line
@@ -20,28 +19,34 @@ const Playground = () => {
       const trimmedGameName = gameNameResult.trim();
       setGameName(encodeURIComponent(trimmedGameName));
       setTagLine(tagLineResult);
-
-      console.log("gameName: " + gameName + " tagline: " + tagLine + " and finally, your region selected is: " + region);
+      console.log("\ngameName: " + gameName + "\ntagline: " + tagLine + "\nregion: " + region);
 
       // Call an async function to make the fetch call
-      fetchData();
+      await fetchData();
     } catch (error) {
-      console.log(error + " failed.");
+      console.error(error + " failed.");
     }
   };
 
   const fetchData = async () => {
     try {
-        const response = await fetch(`/riot_api/player_search?gameName=${gameName}&tagLine=${tagLine}&region=${region}`, {
-            method: 'GET',
-            headers: {
-            'Content-Type': 'application/json',
-        }});
+        const url = apiUrl+`/riot_api/player_search?gameName=${gameName}&tagLine=${tagLine}&region=${region}`
+        const response = await fetch(url,
+        {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+        // Check if the response status is OK (200)
+        if (response.ok) {
+            console.log(response);
+        }
 
-        console.log(response);
+        // Parse the response as JSON
+        const data = await response.json();
 
+        console.log(data);
     } catch (error) {
-      console.log("Error fetching data:", error);
+      console.error("Error fetching data:", error);
     }
   };
 

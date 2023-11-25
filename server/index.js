@@ -547,13 +547,13 @@ app.listen(port, () => {
 
 // <----- Everything past this point, requires riot's api and is mainly used for testing ----->
 
-app.get("/riot_api/player_search'", async (req, res) => {
-  const {gameName, tagLine, region} = req.body;
+app.get("/riot_api/player_search", async (req, res) => {
+  const { gameName, tagLine, region } = req.query;
   try {
     const riotResponse = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`)
     res.json(riotResponse.data);
-  res.status(200).json({ message: '' });
   } catch (error) {
+    console.error("Error fetching data:", error);
     res.status(500).json({ message: 'Internal Server Error' });
-}
+  }
 });
