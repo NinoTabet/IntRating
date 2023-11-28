@@ -551,11 +551,11 @@ app.get("/riot_api/player_search", async (req, res) => {
   const { gameName, tagLine, region } = req.query;
   try {
     // checks if player exists
-    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`)
+    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
+
     player_data = riotResponse.data;
     
     // replies with player data that should be used when sending all other riot api calls
-    
     res.json(player_data);
 
   } catch (error) {
@@ -566,25 +566,25 @@ app.get("/riot_api/player_search", async (req, res) => {
 
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
-// will add this when I figure out how to get current rank and stuff
+  // will add this when I figure out how to get current rank and stuff
+
 });
 
-// collects 20 games of match history and responds with relevant data in the form of an object: matchData
+// collects 20 games of match history and responds with relevant data in the form of an object called - matchData
 app.get("/riot_api/match_history", async (req, res) => {
 
   const { puuid, region } = req.query;
-try {
+
+  try {
     // collects recent 40 game match history
     const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`);
-
-    console.log(gamesResponse.data);
   
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
   
     // loops through the array of gameIds
     for (const gameId of gameIds) {
-  
+
       // collects game data looping
       const gameStats = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
   
@@ -598,7 +598,8 @@ try {
       const game_mode = gameStats.data.info.gameMode;
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
-  
+      const participants = player_data.riotIdName;
+
       const matchData = {
         kda: kda,
         champion_played: champion_played,
@@ -606,18 +607,31 @@ try {
         summoner_spells: summoner_spells,
         game_mode: game_mode,
         game_time: game_time,
-        minions_pm: minions_pm
+        minions_pm: minions_pm,
+        participants: participants
       };
   
       console.log("match_history completed successfully!")
       res.json(matchData);
     }
   } catch (error) {
-    
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
 app.get("/riot_api/match_history_extended", async (req, res) => {
+  const { match_id, region } = req.query;
+  
+  try {
+    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${match_id}?api_key=${RIOT_API}`);
+    
+    const matchDataExtended = playerSearch.data
+
+
+  } catch (error){
+    res.status(500).json({ message: 'Internal Server Error' });
+    
+  }
 
 });
 function secondsToMinutesAndSeconds(seconds) {
