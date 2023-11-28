@@ -97,7 +97,7 @@ const Playground = () => {
           <p>Game time: {matchData.game_time}</p>
           <p>Champion played: {matchData.champion_played}</p>
           <p>K/D/A: {matchData.kda}</p>
-          <p>CS Killed: {matchData.minion_kills} ({matchData.cs_pm} cs/min)</p>
+          <p>CS Killed: {matchData.minion_kills} ({matchData.minions_pm} cs/min)</p>
           <p>Summoner spells: {matchData.summoner_spells[0]} {matchData.summoner_spells[1]}</p>
         </div>
       )}
