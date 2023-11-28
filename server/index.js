@@ -553,6 +553,9 @@ app.get("/riot_api/player_search", async (req, res) => {
     // checks if player exists
     const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`)
     player_data = riotResponse.data;
+    
+    // replies with player data that should be used when sending all other riot api calls
+    
     res.json(player_data);
 
   } catch (error) {
@@ -570,43 +573,47 @@ app.get("/riot_api/player_profile", async (req, res) => {
 app.get("/riot_api/match_history", async (req, res) => {
 
   const { puuid, region } = req.query;
+try {
+    // collects recent 40 game match history
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`);
 
-  // collects recent 40 game match history
-  const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`)
-  console.log(gamesResponse.data);
-
-  // set's local gameIds to the data received from gamesResponse (array of game ids)
-  const gameIds = gamesResponse.data;
-
-  // loops through the array of gameIds
-  for (const gameId of gameIds) {
-
-    // collects game data looping
-    const gameStats = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
-
-    const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
-    const player_data = gameStats.data.info.participants[index_puuid];
-
-    const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
-    const champion_played = player_data.championName;
-    const minion_kills = player_data.totalMinionsKilled;
-    const summoner_spells = [player_data.summoner1Id, player_data.summoner2Id];
-    const game_mode = gameStats.data.info.gameMode;
-    const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
-    const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
-
-    const matchData = {
-      kda: kda,
-      champion_played: champion_played,
-      minion_kills: minion_kills,
-      summoner_spells: summoner_spells,
-      game_mode: game_mode,
-      game_time: game_time,
-      minions_pm: minions_pm
-    };
-
-    console.log("match_history completed successfully!")
-    res.json(matchData);
+    console.log(gamesResponse.data);
+  
+    // set's local gameIds to the data received from gamesResponse (array of game ids)
+    const gameIds = gamesResponse.data;
+  
+    // loops through the array of gameIds
+    for (const gameId of gameIds) {
+  
+      // collects game data looping
+      const gameStats = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
+  
+      const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
+      const player_data = gameStats.data.info.participants[index_puuid];
+  
+      const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
+      const champion_played = player_data.championName;
+      const minion_kills = player_data.totalMinionsKilled;
+      const summoner_spells = [player_data.summoner1Id, player_data.summoner2Id];
+      const game_mode = gameStats.data.info.gameMode;
+      const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
+      const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
+  
+      const matchData = {
+        kda: kda,
+        champion_played: champion_played,
+        minion_kills: minion_kills,
+        summoner_spells: summoner_spells,
+        game_mode: game_mode,
+        game_time: game_time,
+        minions_pm: minions_pm
+      };
+  
+      console.log("match_history completed successfully!")
+      res.json(matchData);
+    }
+  } catch (error) {
+    
   }
 });
 
