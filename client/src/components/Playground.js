@@ -6,6 +6,7 @@ const Playground = () => {
   const [gameName, setGameName] = useState("");
   const [tagLine, setTagLine] = useState("");
   const [region, setRegion] = useState("AMERICAS"); // Default region is set to AMERICAS
+  const [matchData, setMatchData] = useState(null); // Initialize matchData as null
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -19,34 +20,33 @@ const Playground = () => {
       const trimmedGameName = gameNameResult.trim();
       setGameName(encodeURIComponent(trimmedGameName));
       setTagLine(tagLineResult);
-      console.log("\ngameName: " + gameName + "\ntagline: " + tagLine + "\nregion: " + region);
-
+      
       // Call an async function to make the fetch call
-      await fetchData();
+      const data = await fetchData();
+      setMatchData(data);
     } catch (error) {
-      console.error(error + " failed.");
+      return alert("username incorrect, please try again.");
     }
   };
 
   const fetchData = async () => {
     try {
-        const url = apiUrl+`/riot_api/player_search?gameName=${gameName}&tagLine=${tagLine}&region=${region}`
-        const response = await fetch(url,
-        {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        });
-        // Check if the response status is OK (200)
-        if (response.ok) {
-            console.log(response);
-        }
+      const url = apiUrl + `/riot_api/player_search?gameName=${gameName}&tagLine=${tagLine}&region=${region}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
-        // Parse the response as JSON
-        const data = await response.json();
+      // Check if the response status is OK (200)
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
 
-        console.log(data);
+      // Parse the response as JSON
+      return await response.json();
     } catch (error) {
       console.error("Error fetching data:", error);
+      throw error; // Rethrow the error to handle it in the calling function
     }
   };
 
@@ -57,6 +57,7 @@ const Playground = () => {
 
     return [gameNameResult, tagLineResult];
   };
+
 
   return (
     <>
@@ -89,6 +90,17 @@ const Playground = () => {
           Search
         </button>
       </form>
+      {matchData && (
+        <div>
+          <h1>game data test</h1>
+          <p>Game mode: {matchData.game_mode}</p>
+          <p>Game time: {matchData.game_time}</p>
+          <p>Champion played: {matchData.champion_played}</p>
+          <p>K/D/A: {matchData.kda}</p>
+          <p>CS Killed: {matchData.minion_kills} ({matchData.cs_pm} cs/min)</p>
+          <p>Summoner spells: {matchData.summoner_spells[0]} {matchData.summoner_spells[1]}</p>
+        </div>
+      )}
     </>
   );
 };
