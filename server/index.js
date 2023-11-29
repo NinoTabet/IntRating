@@ -566,7 +566,45 @@ app.get("/riot_api/player_search", async (req, res) => {
 
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
-  // will add this when I figure out how to get current rank and stuff
+  // specificRegion = NA1, EUW, LA1, LA2,
+  const { puuid, specificRegion, gameName, tagLine } = req.query;
+  
+  try {
+  // need to get summoner name for ranked queue, lp, tier, rank
+  // get name and tagline  
+  // get wins and losses
+  // calculate WR
+  const playerIdSearch = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
+
+  const playerId = playerIdSearch.data.id;
+
+
+  const playerRankedData = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}`)
+
+  if(!playerRankedData){
+    console.log ("player has no rank.");
+  }
+  
+  // player ranked data
+  const player_rank = playerRankedData.data.rank; 
+  const queue_type = playerRankedData.data.queueType;
+  const player_Tier = playerRankedData.data.tier;
+  const player_LP = playerRankedData.data.leaguePoints;
+  const player_ranked_wins = playerRankedData.data.wins;
+  const player_ranked_losses = playerRankedData.data.losses;
+  
+  // player profile data
+  const player_level = playerIdSearch.data.profileIconId;
+  const player_icon = playerIdSearch.data.summonerLevel;
+
+  // putting all data in a single object
+  const playerProfileData = (player_rank, queue_type, player_Tier, player_LP, player_ranked_wins, player_ranked_losses, player_level, player_icon);
+
+  res.json(playerProfileData);
+  
+  } catch (error) {
+    
+  }
 
 });
 
@@ -592,13 +630,22 @@ app.get("/riot_api/match_history", async (req, res) => {
       const player_data = gameStats.data.info.participants[index_puuid];
   
       const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
+      const calculated_kda = ((player_data.kills+player_data.assists)/player_data.deaths);
       const champion_played = player_data.championName;
       const minion_kills = player_data.totalMinionsKilled;
       const summoner_spells = [player_data.summoner1Id, player_data.summoner2Id];
       const game_mode = gameStats.data.info.gameMode;
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
-      const participants = player_data.riotIdName;
+      const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
+
+      // kill participation calculation
+      const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === teamId);
+      const player_team_kills = player_team_Id.reduce((total, player) => total + player.kills, 0);
+      const kill_participation = ((player_data.kills / player_team_kills) * 100).toFixed(0);
+
+      //participants is tbd on if I send an array or just an obj
+      const participants = [player_data.riotIdName];
 
       const matchData = {
         kda: kda,
@@ -608,9 +655,11 @@ app.get("/riot_api/match_history", async (req, res) => {
         game_mode: game_mode,
         game_time: game_time,
         minions_pm: minions_pm,
-        participants: participants
+        participants: participants,
+        kill_participation: kill_participation,
+        calculated_kda: calculated_kda
       };
-  
+
       console.log("match_history completed successfully!")
       res.json(matchData);
     }
