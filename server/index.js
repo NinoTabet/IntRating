@@ -547,6 +547,7 @@ app.listen(port, () => {
 
 // <----- Everything past this point, requires riot's api and is mainly used for testing ----->
 
+// player search
 app.get("/riot_api/player_search", async (req, res) => {
   const { gameName, tagLine, region } = req.query;
   try {
@@ -567,13 +568,9 @@ app.get("/riot_api/player_search", async (req, res) => {
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
   // specificRegion = NA1, EUW, LA1, LA2,
-  const { puuid, specificRegion, gameName, tagLine } = req.query;
+  const { puuid, specificRegion } = req.query;
   
   try {
-  // need to get summoner name for ranked queue, lp, tier, rank
-  // get name and tagline  
-  // get wins and losses
-  // calculate WR
   const playerIdSearch = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
 
   const playerId = playerIdSearch.data.id;
@@ -603,9 +600,8 @@ app.get("/riot_api/player_profile", async (req, res) => {
   res.json(playerProfileData);
   
   } catch (error) {
-    
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-
 });
 
 // collects 20 games of match history and responds with relevant data in the form of an object called - matchData
@@ -630,7 +626,7 @@ app.get("/riot_api/match_history", async (req, res) => {
       const player_data = gameStats.data.info.participants[index_puuid];
   
       const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
-      const calculated_kda = ((player_data.kills+player_data.assists)/player_data.deaths);
+      const calculated_kda = ((player_data.kills + player_data.assists) / player_data.deaths).toFixed(2);
       const champion_played = player_data.championName;
       const minion_kills = player_data.totalMinionsKilled;
       const summoner_spells = [player_data.summoner1Id, player_data.summoner2Id];
@@ -638,26 +634,33 @@ app.get("/riot_api/match_history", async (req, res) => {
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
-
+      const game_end_time = gameStats.data.info.gameEndTimestamp;
+      const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVissionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
+      const total_pings = pings.reduce((total, ping) => total + ping, 0);
+      
       // kill participation calculation
       const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === teamId);
       const player_team_kills = player_team_Id.reduce((total, player) => total + player.kills, 0);
-      const kill_participation = ((player_data.kills / player_team_kills) * 100).toFixed(0);
+      const kill_participation = ((player_data.kills / player_team_kills + "%") * 100).toFixed(0);
 
-      //participants is tbd on if I send an array or just an obj
+      // TODO participants is tbd on if I send an array or just an obj !!!!!!!!!!!!!!!!!!!!!!!!!!!!
       const participants = [player_data.riotIdName];
 
       const matchData = {
-        kda: kda,
-        champion_played: champion_played,
-        minion_kills: minion_kills,
-        summoner_spells: summoner_spells,
-        game_mode: game_mode,
-        game_time: game_time,
-        minions_pm: minions_pm,
-        participants: participants,
-        kill_participation: kill_participation,
-        calculated_kda: calculated_kda
+        kda: kda, // int - K/D/A (ex. 7/2/12)
+        champion_played: champion_played, // string - character name (ex. Gangplank)
+        minion_kills: minion_kills, // int - total minions killed (ex. 300)
+        summoner_spells: summoner_spells, // array - summoner spells (ex. [1,4])
+        game_mode: game_mode, // string - game mode (ex. NORMAL 5v5)
+        game_time: game_time, // time - game time in minutes and seconds(ex. 29:12)
+        minions_pm: minions_pm, // int - minions killed per minute (ex. 9.2)
+        participants: participants, // UNSURE IF WORKING. MUST CHECK BACK AGAIN LATER. array - player names in match (ex. ?)
+        kill_participation: kill_participation, // int - kill participation percentage (ex. 76%)
+        calculated_kda: calculated_kda, // int - (K+A)/D to 2 decimal places (ex. 7.00)
+        items: items, // array - item numbers (ex. [35, 8, 19, ...])
+        game_end_time: game_end_time, // int - unix time stamp for end of game time (ex. 1637825752)
+        pings: pings, // array - number of pings per ping (ex. [ 1, 0, 50, 12, 0, ... ])
+        total_pings: total_pings // int - total sum of pings (ex. 82)
       };
 
       console.log("match_history completed successfully!")
