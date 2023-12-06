@@ -189,11 +189,7 @@ app.get("/profile", verifyToken, async (req, res) => {
   try {
     // searches for all reviews associated with the userId found in the jwt
     const reviewSearch = await pool.query(
-      "SELECT r.*, u.username AS reviewer_username, p.original_username AS reviewed_username " +
-      "FROM ratings r " +
-      "JOIN user_accounts u ON r.user_id = u.user_id " +
-      "JOIN player p ON r.player_id = p.player_id " +
-      "WHERE r.user_id = $1",
+      "SELECT * FROM ratings WHERE user_id = ($1)",
       [userId]
     );
 
@@ -355,7 +351,7 @@ app.get("/api/collect-averages", async (req, res) => {
 
     const player_id_result = await pool.query(
       "SELECT player_id FROM player WHERE puuid = ($1)",
-      [original_username, server_name]
+      [puuid]
     );
     const player_id = player_id_result.rows[0]?.player_id;
 
@@ -415,18 +411,22 @@ app.get("/total_ratings", async (req, res) => {
 
 app.get("/api/text_review", async (req, res) => {
   try {
-    const { username, server_name } = req.query;
+    const { puuid } = req.query;
 
     const reviews = await pool.query(
-      "SELECT * FROM ratings WHERE player_id = (SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2))",
-      [username, server_name]
+      "SELECT * FROM ratings WHERE player_id = (SELECT player_id FROM player WHERE puuid = ($1))",
+      [puuid]
     );
 
     const usernames = await pool.query(
-      "SELECT username FROM user_accounts WHERE user_id = (SELECT user_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2))",
-      [username, server_name]
+      "SELECT username FROM user_accounts " +
+      "JOIN ratings ON user_accounts.user_id = ratings.user_id " +
+      "JOIN player ON ratings.player_id = player.player_id " +
+      "WHERE player.puuid = ($1)",
+      [puuid]
     );
 
+    console.log(usernames);
     // Extract the usernames from the result
     const userNamesList = usernames.rows.map(user => user.username);
 
@@ -441,6 +441,7 @@ app.get("/api/text_review", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // user signup api
 app.post("/signup", async (req, res) => {

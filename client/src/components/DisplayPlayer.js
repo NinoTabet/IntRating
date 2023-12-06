@@ -4,7 +4,7 @@ import DisplayPlayerReviews from "./DisplayPlayerReviews";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const DisplayPlayer = (props) => {
+const DisplayPlayer = ({playerData}) => {
 
     const generateSectionRating = (score, attributeType) => {
         if(attributeType === 'csing') {
@@ -199,7 +199,7 @@ const DisplayPlayer = (props) => {
     }
 };
 
-    const { original_username, server_name, tag_line } = props.playerData;
+    const { puuid, gameName, server_name } = playerData;
 
     const [updatedData, setUpdatedData] = useState(null);
     const updateAndFetchData = async () => {
@@ -211,9 +211,7 @@ const DisplayPlayer = (props) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    original_username: original_username,
-                    server_name: server_name,
-                    tag_line: tag_line,
+                    puuid: puuid,
                 }),
             });
 
@@ -223,7 +221,7 @@ const DisplayPlayer = (props) => {
             }
 
             // Fetch the updated data (GET request)
-            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?original_username=${original_username}&server_name=${server_name}&tag_line=${tag_line}`);
+            const fetchDataResponse = await fetch(apiUrl + `/api/collect-averages?puuid=${puuid}`);
 
             // Check if fetching the data was successful
             if (!fetchDataResponse.ok) {
@@ -271,7 +269,7 @@ const DisplayPlayer = (props) => {
     return (
         <>
             <div className="text-center pb-5">
-                <h1 className="mb-3">{original_username}</h1>
+                <h1 className="mb-3">{gameName}</h1>
                 <h5 className="mb-3">{server_name}</h5>
                 <div>
                     <h6>Number of ratings for this player: <span> {updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></h6>
@@ -379,7 +377,7 @@ const DisplayPlayer = (props) => {
                 <div className="text-center mt-4">
                     <div className="border col-9 col-md-5 mx-auto"/>
                 </div>
-                <DisplayPlayerReviews username={original_username} server_name={server_name} />
+                <DisplayPlayerReviews puuid = {puuid} />
             </div>
         </>
     );

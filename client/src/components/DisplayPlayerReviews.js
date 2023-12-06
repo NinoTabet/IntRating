@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const DisplayPlayerReviews = ({ username, server_name }) => {
+const DisplayPlayerReviews = ({ puuid }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
     const fetchPlayerReviews = async () => {
       try {
-        const response = await fetch(apiUrl + `/api/text_review?username=${username}&server_name=${server_name}`);
+        const response = await fetch(apiUrl + `/api/text_review?puuid=${puuid}`);
   
         if (response.ok) {
           const data = await response.json();
@@ -21,7 +21,7 @@ const DisplayPlayerReviews = ({ username, server_name }) => {
   
     // Call the function to fetch reviews
     fetchPlayerReviews();
-  }, [username, server_name]);  
+  }, [puuid]);  
 
   const getHighestRatedField = (review) => {
     const fields = [
@@ -112,7 +112,7 @@ const DisplayPlayerReviews = ({ username, server_name }) => {
                 <div key={index} className="card-container w-100 mb-3">
                   <div className="card mx-auto">
                     <div className="card-body" style={{ textAlign: 'left' }}>
-                      <p className="card-title"><span className="fw-bold">Review for: </span>{data.usernames[index]}</p>
+                      <p className="card-title"><span className="fw-bold">Review by: </span>{data.usernames[index]}</p>
                       <p className="mt-3"><span className="fw-bold">Overall Rating: </span>{calculateAverageScore(review)}</p>
                       <p><span className="fw-bold">Highest Rated Field: </span>{getHighestRatedField(review)} - {review[getHighestRatedField(review)]}</p>
                       <p><span className="fw-bold">Lowest Rated Field: </span>{getLowestRatedField(review)} - {review[getLowestRatedField(review)]}</p>
