@@ -46,42 +46,39 @@ function verifyToken(req, res, next) {
 // player rating logic
 app.post("/rating", verifyToken, async (req, res) => {
   try {
-    const { full_username, server_name } = req.body;
+    const { gameName, tagLine, server_name} = req.body
+        console.log(gameName, tagLine, server_name);
     const userId = req.user.userId;
     if (!userId) {
       return res.status(401).json({ message: "Invalid user ID" });
     }
 
-    // Extract username and tag_line from full_username
-    let original_username, tag_line;
-    try {
-      [original_username, tag_line] = extractUsernameAndTagline(full_username);
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
-    }
+    const regionSearch = await pool.query(
+      "SELECT region FROM server WHERE server_name = ($1)",
+      [server_name]
+    );
+    const region = regionSearch.rows[0].region
+    console.log(region)
+    const playerSearch = await axios.get(
+      `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`
+    );
+    const puuid = playerSearch.data.puuid;
 
-    console.log("username: "+original_username + " tagline: "+tag_line);
-    // Check if player in the specified server exists
-    const playerCheck = await pool.query(
-      "SELECT * FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
-      [original_username, server_name, tag_line]
+    const searchPlayer = await pool.query(
+      "SELECT * FROM player WHERE puuid = ($1)",
+      [puuid]
     );
 
-    let player_id;
-
-    // Create a new player if no player exists
-    if (playerCheck.rows.length === 0) {
-      const newPlayer = await pool.query(
-        "INSERT INTO player (original_username, lower_username, tag_line, server_id) VALUES($1, LOWER($2), UPPER($3), (SELECT server_id FROM server WHERE server_name = $4)) RETURNING player_id",
-        [original_username, original_username, tag_line, server_name]
+    if (searchPlayer.rows.length == 0) {
+      // Player not found in the database, insert the record
+      const saveUser = await pool.query(
+        "INSERT INTO player (puuid) VALUES ($1)",
+        [puuid]
       );
-
-      // Extract player_id from the result
-      player_id = newPlayer.rows[0].player_id;
-    } else {
-      // Player already exists, get player_id from the check result
-      player_id = playerCheck.rows[0].player_id;
     }
+    console.log(puuid);
+    const player_id = searchPlayer.rows[0].player_id;
+
     const {
         creep_score,
         map_awareness_score,
@@ -107,7 +104,7 @@ app.post("/rating", verifyToken, async (req, res) => {
       [player_id,userId]
     )
 
-    let rating; // Declare rating outside the try block to access it later
+    let rating; 
 
     if (!checkPreviousRating.rows.length) {
       // Input into the ratings table with the request info
@@ -220,39 +217,30 @@ app.get("/profile", verifyToken, async (req, res) => {
 
 // player search
 app.get("/search", async (req, res) => {
-    try {
-      console.log("Search route hit");
-  
-      const { full_username, server_name } = req.query;
-  
-         // Extract username and tag_line from full_username
-    let original_username, tag_line;
-    try {
-      [original_username, tag_line] = extractUsernameAndTagline(full_username);
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
-    }
 
-      // Note: You should adjust the SQL query to match your database schema
-      const searchPlayer = await pool.query(
-      "SELECT original_username, tag_line FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
-        [original_username, server_name, tag_line]
+    const {gameName, tagLine, server_name} = req.query;
+    try {
+      // checks if player exists
+      const regionSearch = await pool.query(
+        "SELECT region FROM server WHERE server_name = ($1)",
+        [server_name]
       );
+      const region = regionSearch.rows[0].region
+
+      const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
+
+      const player_data = 
+      {
+        server_name : server_name,
+        puuid : playerSearch.data.puuid,
+        gameName : playerSearch.data.gameName,
+        tagLine : playerSearch.data.tagLine
+      };
+
+      res.json(player_data);
   
-      if (searchPlayer.rows.length > 0) {
-        // If a player is found, respond with the player details
-        const playerFound = await pool.query(
-          "SELECT original_username, tag_line FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
-          [original_username, server_name]
-        )
-        console.log(playerFound.rows[0])
-        res.json(playerFound.rows[0]);
-      } else {
-        res.status(404).json({ message: "Player not found" });
-      }
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ message: "Internal Server Error" });
+    } catch (error) {
+      res.status(404).json("Player not found. Please check the spelling of the name and tag line");
     }
 });
 
@@ -269,12 +257,12 @@ app.get("/servers", async (req, res) => {
 // updates avg scores
 app.post("/api/update-averages", async (req, res) => {
   try {
-    const { original_username, server_name, tag_line } = req.body;
+    const { puuid } = req.body;
 
     // Locate player id
     const playerResult = await pool.query(
-      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2) AND tag_line = UPPER($3)",
-      [original_username, server_name, tag_line]
+      "SELECT player_id FROM player WHERE puuid = ($1)",
+      [puuid]
     );
     const player_id = playerResult.rows[0]?.player_id;
 
@@ -307,9 +295,6 @@ app.post("/api/update-averages", async (req, res) => {
     console.log('Average Scores:', averageScores);
 
     if (existingEntry.rows.length === 0) {
-      // If there is no existing entry, perform an INSERT
-      // ... other code
-
       // If there is no existing entry, perform an INSERT
       await pool.query(
         "INSERT INTO average_ratings (player_id, creep_score_avg, map_awareness_score_avg, team_fighting_score_avg, feeding_score_avg, toxicity_score_avg, tilt_score_avg, kindness_score_avg, laning_score_avg, carry_score_avg, shot_calling_score_avg, play_again_avg, overall_avg, last_click_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, COALESCE((SELECT AVG((creep_score_avg + map_awareness_score_avg + team_fighting_score_avg + feeding_score_avg + toxicity_score_avg + tilt_score_avg + kindness_score_avg + laning_score_avg + carry_score_avg + shot_calling_score_avg + play_again_avg) / 11) FROM average_ratings WHERE player_id = $1), 0), NOW())",
@@ -366,10 +351,10 @@ app.post("/api/update-averages", async (req, res) => {
 // pulls avg scores and total # of ratings of specified user
 app.get("/api/collect-averages", async (req, res) => {
   try {
-    const { original_username, server_name } = req.query;
+    const { puuid } = req.query;
 
     const player_id_result = await pool.query(
-      "SELECT player_id FROM player WHERE lower_username = LOWER($1) AND server_id = (SELECT server_id FROM server WHERE server_name = $2)",
+      "SELECT player_id FROM player WHERE puuid = ($1)",
       [original_username, server_name]
     );
     const player_id = player_id_result.rows[0]?.player_id;
@@ -547,39 +532,37 @@ app.listen(port, () => {
 
 // <----- Everything past this point, requires riot's api and is mainly used for testing ----->
 
-// player search
+// player search NO LONGER NEEDED. check "/search" for the integration of the below code
+/*
 app.get("/riot_api/player_search", async (req, res) => {
   const { gameName, tagLine, region } = req.query;
   try {
     // checks if player exists
     const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
-
-    player_data = riotResponse.data;
     
-    // replies with player data that should be used when sending all other riot api calls
+    const player_data = playerSearch.data;
+
     res.json(player_data);
 
   } catch (error) {
-    console.error("Error fetching data");
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(404).json("Player not found. Please check the spelling of the name and tag line");
   }
-});
+});*/
 
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
+  
   // specificRegion = NA1, EUW, LA1, LA2,
   const { puuid, specificRegion } = req.query;
   
   try {
   const playerIdSearch = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
-
   const playerId = playerIdSearch.data.id;
 
+  const playerRankedData = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`)
 
-  const playerRankedData = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}`)
-
-  if(!playerRankedData){
-    console.log ("player has no rank.");
+  if (playerRankedData && playerRankedData.length === 0) {
+    res.status(404).json("Player has no rank.");
   }
   
   // player ranked data
@@ -591,8 +574,8 @@ app.get("/riot_api/player_profile", async (req, res) => {
   const player_ranked_losses = playerRankedData.data.losses;
   
   // player profile data
-  const player_level = playerIdSearch.data.profileIconId;
-  const player_icon = playerIdSearch.data.summonerLevel;
+  const player_level = playerIdSearch.data.summoner.summonerLevel;
+  const player_icon = playerIdSearch.data.summoner.profileIconId;
 
   // putting all data in a single object
   const playerProfileData = (player_rank, queue_type, player_Tier, player_LP, player_ranked_wins, player_ranked_losses, player_level, player_icon);
@@ -671,21 +654,15 @@ app.get("/riot_api/match_history", async (req, res) => {
   }
 });
 
-app.get("/riot_api/match_history_extended", async (req, res) => {
-  const { match_id, region } = req.query;
-  
-  try {
-    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${match_id}?api_key=${RIOT_API}`);
-    
-    const matchDataExtended = playerSearch.data
-
-
-  } catch (error){
-    res.status(500).json({ message: 'Internal Server Error' });
-    
-  }
-
-});
+// app.get("/riot_api/match_history_extended", async (req, res) => {
+//   const { match_id, region } = req.query;
+//   try {
+//     const playerSearch = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${match_id}?api_key=${RIOT_API}`);
+//     const matchDataExtended = playerSearch.data
+//   } catch (error){
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
 function secondsToMinutesAndSeconds(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
