@@ -59,11 +59,13 @@ app.post("/rating", verifyToken, async (req, res) => {
     );
     const region = regionSearch.rows[0].region
     console.log(region)
+    console.log(region, gameName, tagLine, RIOT_API);
     const playerSearch = await axios.get(
       `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`
     );
+    console.log("api call successful");
     const puuid = playerSearch.data.puuid;
-
+    
     const searchPlayer = await pool.query(
       "SELECT * FROM player WHERE puuid = ($1)",
       [puuid]
@@ -72,8 +74,14 @@ app.post("/rating", verifyToken, async (req, res) => {
     if (searchPlayer.rows.length == 0) {
       // Player not found in the database, insert the record
       const saveUser = await pool.query(
-        "INSERT INTO player (puuid) VALUES ($1)",
-        [puuid]
+        "INSERT INTO player (puuid, server_name) VALUES ($1, $2)",
+        [puuid, server_name]
+      );
+    }else{
+      //updates the server in database
+      const updatePlayer = await pool.query(
+        "UPDATE player SET server_name = $1 WHERE puuid = $2",
+        [server_name, puuid]
       );
     }
     console.log(puuid);
@@ -183,61 +191,144 @@ app.get("/profile", verifyToken, async (req, res) => {
   // userId associated with the token
   const userId = req.user.userId;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized request. Please log in before performing this action." });
+    return res
+    .status(401)
+    .json({ message: "Unauthorized request. Please log in before performing this action." });
   }
 
   try {
     // searches for all reviews associated with the userId found in the jwt
+    console.log('1');
     const reviewSearch = await pool.query(
       "SELECT * FROM ratings WHERE user_id = ($1)",
       [userId]
     );
 
+    // Initialize an array to store player IDs from reviews
+    const playerIds = [];
+
+    // Loop through reviews to collect player IDs
+    reviewSearch.rows.forEach((review) => {
+      playerIds.push(review.player_id);
+    });
+
+    if (playerIds.length === 0) {
+      // No player IDs found, skip to fetching the username
+      const usernameSearch = await pool.query(
+        "SELECT username FROM user_accounts WHERE user_id = $1",
+        [userId]
+      );
+
+      console.log(usernameSearch.rows[0]);
+
+      const responseData = {
+        reviewSearch: reviewSearch.rows,
+        playerNames: [],  // No player names to fetch
+        usernameSearch: usernameSearch.rows[0],
+      };
+
+      return res.json(responseData);
+    }
+
+    // Use the collected player IDs to fetch usernames
+    const puuidCollection = await pool.query(
+      "SELECT puuid FROM player WHERE player_id = ANY($1)",
+      [playerIds]
+    );
+
+    // Extracting the first puuid from the collection
+    const puuid = puuidCollection.rows[0].puuid;
+
+    // Fetching the server name for the given puuid
+    const serverCollection = await pool.query(
+      "SELECT server_name FROM player WHERE puuid = ($1)",
+      [puuid]
+    );
+
+    // Extracting the server name from the collection
+    const serverName = serverCollection.rows[0].server_name;
+
+    // Fetching the region for the given server name
+    const regionCollection = await pool.query(
+      "SELECT region FROM server WHERE server_name = ($1)",
+      [serverName]
+    );
+
+    // Extracting the region from the collection
+    const region = regionCollection.rows[0].region;
+
+    // Initialize an array to store player names
+    const playerNames = [];
+
+    // Loop through puuids and fetch player names
+    for (const { puuid } of puuidCollection.rows) {
+      try {
+        const response = await axios.get(
+          `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`
+        );
+
+        console.log('game name is: ' + response.data.gameName);
+        playerNames.push(response.data.gameName);
+      } catch (error) {
+        //console.error("Error fetching player name:", error.message);
+      }
+    }
+
+    // Use the userId to fetch the associated username
     const usernameSearch = await pool.query(
       "SELECT username FROM user_accounts WHERE user_id = $1",
       [userId]
     );
 
+    console.log(usernameSearch.rows[0]);
+
     const responseData = {
       reviewSearch: reviewSearch.rows,
+      playerNames,
       usernameSearch: usernameSearch.rows[0],
     };
 
     res.json(responseData);
   } catch (error) {
+    console.error(error);
     return res.status(400).json({ message: "Unauthorized request. " });
   }
 });
+
+
 
 // !!---------- After this line, jwt is not needed ----------!!
 
 // player search
 app.get("/search", async (req, res) => {
 
-    const {gameName, tagLine, server_name} = req.query;
-    try {
-      // checks if player exists
-      const regionSearch = await pool.query(
-        "SELECT region FROM server WHERE server_name = ($1)",
-        [server_name]
-      );
-      const region = regionSearch.rows[0].region
+  const {gameName, tagLine, server_name} = req.query;
+  try {
+    // checks if player exists
+    console.log(region, gameName, tagLine, RIOT_API);
 
-      const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
+    const regionSearch = await pool.query(
+      "SELECT region FROM server WHERE server_name = ($1)",
+      [server_name]
+    );
 
-      const player_data = 
-      {
-        server_name : server_name,
-        puuid : playerSearch.data.puuid,
-        gameName : playerSearch.data.gameName,
-        tagLine : playerSearch.data.tagLine
-      };
+    const region = regionSearch.rows[0].region;
 
-      res.json(player_data);
-  
-    } catch (error) {
-      res.status(404).json("Player not found. Please check the spelling of the name and tag line");
-    }
+    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
+
+    const player_data = 
+    {
+      server_name : server_name,
+      puuid : playerSearch.data.puuid,
+      gameName : playerSearch.data.gameName,
+      tagLine : playerSearch.data.tagLine
+    };
+
+    res.json(player_data);
+
+  } catch (error) {
+    res.status(404).json("Player not found. Please check the spelling of the name and tag line");
+  }
 });
 
 // gets all server names

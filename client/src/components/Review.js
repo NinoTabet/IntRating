@@ -1,6 +1,6 @@
 import React from "react";
 
-const Review = ({ review }) => {
+const Review = ({ review , playerNames}) => {
   const getHighestRatedField = () => {
     const fields = [
       'creep_score',
@@ -72,7 +72,7 @@ const Review = ({ review }) => {
   return (
     <div className="card">
       <div className="card-body" style={{ textAlign: 'left' }}>
-        <p className="card-title"><span className="fw-bold">Review for: </span>{review.reviewed_username}</p>
+        <p className="card-title"><span className="fw-bold">Reviewed player: </span>{playerNames}</p>
         <p className="card-text"><span className="fw-bold">Overall Rating: </span>{overallRating}</p>
         <p className="card-text"><span className="fw-bold">Highest Rated Field: </span>{highestRatedField}: {review[highestRatedField]}</p>
         <p className="card-text"><span className="fw-bold">Lowest Rated Field: </span>{lowestRatedField}: {review[lowestRatedField]}</p>

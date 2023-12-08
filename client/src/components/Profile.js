@@ -10,6 +10,7 @@ const Profile = () => {
 
   const [reviewList, setReviewList] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [playerNames, setPlayerNames] = useState([]);
 
   useEffect(() => {
     const fetchDataOnLoad = async () => {
@@ -27,6 +28,10 @@ const Profile = () => {
           // Check if data.reviewSearch is an array before setting it to reviewList
           if (Array.isArray(data.reviewSearch)) {
             setReviewList(data.reviewSearch);
+          }
+          // Check if data.playerNames is an array before setting it
+          if (Array.isArray(data.playerNames)) {
+          setPlayerNames(data.playerNames);
           }
         }
       } catch (error) {
@@ -46,7 +51,7 @@ const Profile = () => {
       <div className='mt-5 card-container mx-auto' style={{ maxHeight: '500px', overflowY: 'auto' }}>
         {reviewList && reviewList.reverse().map((review) => (
           <div key={review.rating_id} className="mb-3">
-            <Review review={review} />
+            <Review review={review} playerNames={playerNames}/>
           </div>
         ))}
       </div>
