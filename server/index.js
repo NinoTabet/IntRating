@@ -47,7 +47,7 @@ function verifyToken(req, res, next) {
 app.post("/rating", verifyToken, async (req, res) => {
   try {
     const { gameName, tagLine, server_name} = req.body
-        console.log(gameName, tagLine, server_name);
+    console.log(gameName, tagLine, server_name);
     const userId = req.user.userId;
     if (!userId) {
       return res.status(401).json({ message: "Invalid user ID" });
@@ -198,7 +198,6 @@ app.get("/profile", verifyToken, async (req, res) => {
 
   try {
     // searches for all reviews associated with the userId found in the jwt
-    console.log('1');
     const reviewSearch = await pool.query(
       "SELECT * FROM ratings WHERE user_id = ($1)",
       [userId]
@@ -218,8 +217,6 @@ app.get("/profile", verifyToken, async (req, res) => {
         "SELECT username FROM user_accounts WHERE user_id = $1",
         [userId]
       );
-
-      console.log(usernameSearch.rows[0]);
 
       const responseData = {
         reviewSearch: reviewSearch.rows,
@@ -267,7 +264,6 @@ app.get("/profile", verifyToken, async (req, res) => {
           `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`
         );
 
-        console.log('game name is: ' + response.data.gameName);
         playerNames.push(response.data.gameName);
       } catch (error) {
         //console.error("Error fetching player name:", error.message);
@@ -279,8 +275,6 @@ app.get("/profile", verifyToken, async (req, res) => {
       "SELECT username FROM user_accounts WHERE user_id = $1",
       [userId]
     );
-
-    console.log(usernameSearch.rows[0]);
 
     const responseData = {
       reviewSearch: reviewSearch.rows,
@@ -295,18 +289,14 @@ app.get("/profile", verifyToken, async (req, res) => {
   }
 });
 
-
-
 // !!---------- After this line, jwt is not needed ----------!!
 
 // player search
 app.get("/search", async (req, res) => {
 
-  const {gameName, tagLine, server_name} = req.query;
+  console.log("search route hit")
+  const { gameName, tagLine, server_name } = req.query;
   try {
-    // checks if player exists
-    console.log(region, gameName, tagLine, RIOT_API);
-
     const regionSearch = await pool.query(
       "SELECT region FROM server WHERE server_name = ($1)",
       [server_name]
@@ -351,6 +341,7 @@ app.post("/api/update-averages", async (req, res) => {
       "SELECT player_id FROM player WHERE puuid = ($1)",
       [puuid]
     );
+
     const player_id = playerResult.rows[0]?.player_id;
 
     // Check if there is an existing entry for the player_id
@@ -377,9 +368,6 @@ app.post("/api/update-averages", async (req, res) => {
       shot_calling_score: calculateAverage(reviews.rows, 'shot_calling_score'),
       play_again: calculateAverage(reviews.rows, 'play_again'),
     };
-
-    console.log('Player ID:', player_id);
-    console.log('Average Scores:', averageScores);
 
     if (existingEntry.rows.length === 0) {
       // If there is no existing entry, perform an INSERT
@@ -517,7 +505,6 @@ app.get("/api/text_review", async (req, res) => {
       [puuid]
     );
 
-    console.log(usernames);
     // Extract the usernames from the result
     const userNamesList = usernames.rows.map(user => user.username);
 
@@ -532,7 +519,6 @@ app.get("/api/text_review", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 // user signup api
 app.post("/signup", async (req, res) => {
@@ -644,35 +630,38 @@ app.get("/riot_api/player_search", async (req, res) => {
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
   
-  // specificRegion = NA1, EUW, LA1, LA2,
-  const { puuid, specificRegion } = req.query;
+  const { puuid, server_name } = req.query;
   
+  console.log(server_name)
   try {
-  const playerIdSearch = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
-  const playerId = playerIdSearch.data.id;
+    const serverTagCollection = await pool.query(
+      "SELECT server_tag FROM server WHERE server_name = ($1)",
+      [server_name]
+    );
+    const server_tag = serverTagCollection.rows[0].server_tag;
 
-  const playerRankedData = await axios.get(`https://${specificRegion}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`)
+    const playerIdSearch = await axios.get(`https://${server_tag}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
+    const playerId = playerIdSearch.data.id;
 
-  if (playerRankedData && playerRankedData.length === 0) {
-    res.status(404).json("Player has no rank.");
-  }
-  
-  // player ranked data
-  const player_rank = playerRankedData.data.rank; 
-  const queue_type = playerRankedData.data.queueType;
-  const player_Tier = playerRankedData.data.tier;
-  const player_LP = playerRankedData.data.leaguePoints;
-  const player_ranked_wins = playerRankedData.data.wins;
-  const player_ranked_losses = playerRankedData.data.losses;
-  
-  // player profile data
-  const player_level = playerIdSearch.data.summoner.summonerLevel;
-  const player_icon = playerIdSearch.data.summoner.profileIconId;
+    const playerRankedData = await axios.get(`https://${server_tag}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`);
+    
+    // player ranked data
+    const player_Rank = playerRankedData.data[0].rank; 
+    const queue_Type = playerRankedData.data[0].queueType;
+    const player_Tier = playerRankedData.data[0].tier;
+    const player_LP = playerRankedData.data[0].leaguePoints;
+    const player_Ranked_Wins = playerRankedData.data[0].wins;
+    const player_Ranked_Losses = playerRankedData.data[0].losses;
+    
+    // player profile data
+    const player_level = playerIdSearch.data.summonerLevel;
+    const player_icon = playerIdSearch.data.profileIconId;
 
-  // putting all data in a single object
-  const playerProfileData = (player_rank, queue_type, player_Tier, player_LP, player_ranked_wins, player_ranked_losses, player_level, player_icon);
+    // putting all data in a single object
+    const playerProfileData = {player_Rank, queue_Type, player_Tier, player_LP, player_Ranked_Wins, player_Ranked_Losses, player_level, player_icon};
 
-  res.json(playerProfileData);
+    console.log(playerProfileData.player_Rank);
+    res.json(playerProfileData);
   
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error' });
@@ -682,15 +671,25 @@ app.get("/riot_api/player_profile", async (req, res) => {
 // collects 20 games of match history and responds with relevant data in the form of an object called - matchData
 app.get("/riot_api/match_history", async (req, res) => {
 
-  const { puuid, region } = req.query;
+  const { puuid, server_name } = req.query;
 
   try {
-    // collects recent 40 game match history
-    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`);
-  
+    const regionCollection = await pool.query(
+      "SELECT region FROM server WHERE server_name = ($1)",
+      [server_name]
+    );
+
+    const region = regionCollection.rows[0].region;
+
+    // collects recent 20 game match history
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3&api_key=${RIOT_API}`);
+
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
-  
+
+    // array to store match data for each game
+    const matchDataArray = [];
+
     // loops through the array of gameIds
     for (const gameId of gameIds) {
 
@@ -699,7 +698,7 @@ app.get("/riot_api/match_history", async (req, res) => {
   
       const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
       const player_data = gameStats.data.info.participants[index_puuid];
-  
+      
       const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
       const calculated_kda = ((player_data.kills + player_data.assists) / player_data.deaths).toFixed(2);
       const champion_played = player_data.championName;
@@ -711,16 +710,15 @@ app.get("/riot_api/match_history", async (req, res) => {
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
       const game_end_time = gameStats.data.info.gameEndTimestamp;
       const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVissionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
-      const total_pings = pings.reduce((total, ping) => total + ping, 0);
-      
+      const total_pings = pings.reduce((total, ping) => total + ping, 0); // fix
+
       // kill participation calculation
-      const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === teamId);
+      const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === player_data.teamId);
       const player_team_kills = player_team_Id.reduce((total, player) => total + player.kills, 0);
-      const kill_participation = ((player_data.kills / player_team_kills + "%") * 100).toFixed(0);
+      const kill_participation = ((player_data.kills / player_team_kills + "%") * 100).toFixed(0); // fix
 
       // TODO participants is tbd on if I send an array or just an obj !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      const participants = [player_data.riotIdName];
-
+      const participants = [player_data.riotIdName]; // fix
       const matchData = {
         kda: kda, // int - K/D/A (ex. 7/2/12)
         champion_played: champion_played, // string - character name (ex. Gangplank)
@@ -738,13 +736,18 @@ app.get("/riot_api/match_history", async (req, res) => {
         total_pings: total_pings // int - total sum of pings (ex. 82)
       };
 
-      console.log("match_history completed successfully!")
-      res.json(matchData);
+      matchDataArray.push(matchData);
     }
+
+    // Send the array of match data once after the loop is completed
+    console.log("match_history completed successfully!")
+    res.json(matchDataArray);
+
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 // app.get("/riot_api/match_history_extended", async (req, res) => {
 //   const { match_id, region } = req.query;
@@ -755,6 +758,7 @@ app.get("/riot_api/match_history", async (req, res) => {
 //     res.status(500).json({ message: 'Internal Server Error' });
 //   }
 // });
+
 function secondsToMinutesAndSeconds(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;

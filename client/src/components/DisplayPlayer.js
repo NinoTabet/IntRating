@@ -198,12 +198,17 @@ const DisplayPlayer = ({playerData}) => {
     return { stars: ' ', text: ' ' };
     }
 };
-
     const { puuid, gameName, server_name } = playerData;
 
     const [updatedData, setUpdatedData] = useState(null);
     const updateAndFetchData = async () => {
         try {
+            const riotApiProfileData = await fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
+            const playerProfileData = await riotApiProfileData.json();
+
+            const riotApiMatchHistory = await fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
+            const MatchHistory = await riotApiProfileData.json();
+            console.log(MatchHistory[0]);
             // Perform the update (POST request)
             const updateResponse = await fetch(apiUrl + '/api/update-averages', {
                 method: 'POST',
@@ -230,7 +235,6 @@ const DisplayPlayer = ({playerData}) => {
 
             // Extract the data and update the UI
             const updatedData = await fetchDataResponse.json();
-            console.log(updatedData);
 
             setUpdatedData(updatedData);
         } catch (error) {

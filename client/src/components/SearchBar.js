@@ -22,17 +22,17 @@ const SearchBar = ({ handleSearchSuccess }) => {
     setTagLine(tagLineResult);
     
     try {
-      const url = apiUrl + `/search?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}&server_name=${encodeURIComponent(selectedServer)}`;
+      const url = apiUrl + `/search?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}&server_name=${selectedServer}`;
       const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
       if (response.ok) {
-        const data = await response.json();
-        handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, tag_line : data.tag_line });
+        const data = await response.json();          
+        handleSearchSuccess(data);
       }else{
-        alert('Player not found in database. Be the first to rate '+full_username+'!');
+        alert('Player not found in database. Be the first to rate ' + full_username +'!');
       }
     } catch (err) {
       console.error("Error:", err.message);
