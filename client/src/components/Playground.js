@@ -1,107 +1,138 @@
-import { useState } from "react";
-const apiUrl = process.env.REACT_APP_API_URL;
+import { useState } from 'react';
+import MatchCard from './MatchCard';
+import DisplayPlayerReviews from './DisplayPlayerReviews';
 
 const Playground = () => {
-  const [full_username, setFull_Username] = useState("");
-  const [gameName, setGameName] = useState("");
-  const [tagLine, setTagLine] = useState("");
-  const [region, setRegion] = useState("AMERICAS"); // Default region is set to AMERICAS
-  const [matchData, setMatchData] = useState(null); // Initialize matchData as null
+  const [showRankedData, setShowRankedData] = useState(true);
+  const [showHistory, setShowHistory] = useState(true);
 
-  const onSubmitForm = async (e) => {
-    e.preventDefault();
-    try {
-      // Helper function to extract username and tag_line
-      const [gameNameResult, tagLineResult] = extractUsernameAndTagline(
-        full_username
-      );
-
-      // Remove trailing spaces from the gameName and replace spaces with '%20'
-      const trimmedGameName = gameNameResult.trim();
-      setGameName(encodeURIComponent(trimmedGameName));
-      setTagLine(tagLineResult);
-      
-      // Call an async function to make the fetch call
-      const data = await fetchData();
-      setMatchData(data);
-    } catch (error) {
-      return alert("username incorrect, please try again.");
-    }
+  const handleButtonClick = (isRankedData) => {
+    setShowRankedData(isRankedData);
+    setShowHistory(isRankedData);
   };
-
-  const fetchData = async () => {
-    try {
-      const url = apiUrl + `/riot_api/player_search?gameName=${gameName}&tagLine=${tagLine}&region=${region}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // Check if the response status is OK (200)
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
-
-      // Parse the response as JSON
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error; // Rethrow the error to handle it in the calling function
-    }
-  };
-
-  const extractUsernameAndTagline = (full_username) => {
-    const hashIndex = full_username.indexOf("#");
-    const gameNameResult = full_username.substring(0, hashIndex);
-    const tagLineResult = full_username.substring(hashIndex + 1);
-
-    return [gameNameResult, tagLineResult];
-  };
-
 
   return (
     <>
-      <form
-        className="d-flex flex-column flex-md-row mx-auto text-center"
-        onSubmit={onSubmitForm}
-      >
-        <div className="mb-1 me-md-1">
-          <input
-            type="search"
-            className="form-control text-bg-light"
-            placeholder="Player name..."
-            aria-label="Search"
-            value={full_username}
-            onChange={(e) => setFull_Username(e.target.value)}
-          />
+      <div className='text-center'>
+        <div className='d-flex flex-column'>
+          <div className='d-flex justify-content-around sticky-top'>
+            {/* Account Info */}
+            <div className='col-3 flex-column d-flex align-items-center justify-content-center '>
+              <div>
+                <img
+                  src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304'
+                  alt='profile image'
+                  className='profile-pics border border-dark'
+                />
+                <div className='mt-1'>
+                  <span className='rounded bg-dark w-25 p-1 text-light'>572</span>
+                  <h1>Guitarmo <span className='text-secondary h6'>#NA1</span></h1>
+                  <div>Total reviews: <span>69</span></div>
+                  <div>Overall rating: <span>4.23/5</span></div>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='d-flex mt-2'>
+                <button onClick={() => handleButtonClick(true)} className={`btn btn-light btn-med flex-grow-1 me-1 ${showRankedData ? 'active' : ''}`}>Match History</button>
+                  <button onClick={() => handleButtonClick(false)} className={`btn btn-dark border border-dark btn-med flex-grow-1 ${!showRankedData ? 'active' : ''}`}>Reviews</button>
+                </div>
+              </div>
+            </div>
+            {showRankedData ? (
+            <div className='border border-primary d-flex col align-items-center justify-content-center'>
+              <div className='d-flex justify-content-center'>
+                <div className='me-5'>
+                  <div className='h6'>Solo / Duo</div>
+                  <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                  <div>
+                    <div className='border'><div className='h3 mb-0'>Platinum<span className='ms-2 me-2'>II</span></div></div>
+                    <p className='h6 text-secondary'>69 LP</p>
+                    <div className='h6'><span className='text-primary'>200</span> | <span className='text-danger'>100</span></div>
+                    <div className='h6 text-secondary'> </div>
+                    <div className='h6 text-secondary'>60% WR</div>
+                  </div>
+                </div>
+                <div>
+                  <div className='h6'>Flex 5v5</div>
+                  <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                  <div>
+                    <div className='border'><div className='h3 mb-0'>Platinum<span className='ms-2 me-2'>II</span></div></div>
+                    <p className='h6 text-secondary'>69 LP</p>
+                    <div className='h6'><span className='text-primary'>200</span> | <span className='text-danger'>100</span></div>
+                    <div className='h6 text-secondary'>60% WR</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ) : (
+            <div className='col d-flex'>
+            <div className='p1 col'>
+              <div className='row '>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+              </div>
+              <div className='row '>
+              <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+              </div>
+              <div className='row '>
+              <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+                <div className='col m-1'>
+                  <div className='fw-bold'>Laning / Jungling</div>
+                  <div>★★★☆☆</div>
+                </div>
+              </div>
+              <div className='col'>
+                  <div>Play again?</div>
+                  <div>☆☆☆☆☆</div>
+                </div>
+            </div>
+            </div>
+            )}
+          </div>
         </div>
-        <div className="mb-1 me-md-1">
-          <select
-            className="form-select"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          >
-            <option value="AMERICAS">AMERICAS</option>
-            <option value="EUROPE">EUROPE</option>
-            <option value="ASIA">ASIA</option>
-          </select>
+      </div>
+      {showHistory ? (
+      <div className='d-flex justify-content-around mt-5'>
+        <div className='col-6'>
+          <MatchCard/>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Search
-        </button>
-      </form>
-      {matchData && (
-        <div>
-          <h1>game data test</h1>
-          <p>Game mode: {matchData.game_mode}</p>
-          <p>Game time: {matchData.game_time}</p>
-          <p>Champion played: {matchData.champion_played}</p>
-          <p>K/D/A: {matchData.kda}</p>
-          <p>CS Killed: {matchData.minion_kills} ({matchData.minions_pm} cs/min)</p>
-          <p>Summoner spells: {matchData.summoner_spells[0]} {matchData.summoner_spells[1]}</p>
+      </div>
+      ):(
+      <div className='d-flex justify-content-around mt-5'>
+        <div className='col-6 border rounded border-dark'>
+          <DisplayPlayerReviews/>
         </div>
+      </div>
       )}
-    </>
+    </> 
   );
 };
 

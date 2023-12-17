@@ -18,3 +18,7 @@ nav{
 .nav-hover-effect:hover {
   background-color: #ebeced; /* Change this to the desired hover color */
 }
+.profile-pics{
+  height: 100px;
+  border-radius: 15%;
+}

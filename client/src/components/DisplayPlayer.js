@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../DisplayPlayer.css";
 import DisplayPlayerReviews from "./DisplayPlayerReviews";
+import MatchCard from "./MatchCard";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -198,17 +199,23 @@ const DisplayPlayer = ({playerData}) => {
     return { stars: ' ', text: ' ' };
     }
 };
-    const { puuid, gameName, server_name } = playerData;
+    const { puuid, gameName, tagLine, server_name } = playerData;
 
     const [updatedData, setUpdatedData] = useState(null);
+    const [MatchHistory, setMatchHistory] = useState(null);
+    const [playerProfileData, setPlayerProfileData] = useState(null);
+
+    const [showRankedData, setShowRankedData] = useState(true);
+    const [showHistory, setShowHistory] = useState(true);
+  
+    const handleButtonClick = (isRankedData) => {
+      setShowRankedData(isRankedData);
+      setShowHistory(isRankedData);
+    };
+
     const updateAndFetchData = async () => {
         try {
-            const riotApiProfileData = await fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
-            const playerProfileData = await riotApiProfileData.json();
 
-            const riotApiMatchHistory = await fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
-            const MatchHistory = await riotApiProfileData.json();
-            console.log(MatchHistory[0]);
             // Perform the update (POST request)
             const updateResponse = await fetch(apiUrl + '/api/update-averages', {
                 method: 'POST',
@@ -237,15 +244,23 @@ const DisplayPlayer = ({playerData}) => {
             const updatedData = await fetchDataResponse.json();
 
             setUpdatedData(updatedData);
+
+            const riotApiProfileData = await fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
+            const rawProfileData = await riotApiProfileData.json();
+            setPlayerProfileData(rawProfileData);
+
+            const riotApiMatchHistory = await fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
+            const matchHistoryData = await riotApiMatchHistory.json();
+            setMatchHistory(matchHistoryData);
         } catch (error) {
-            console.error('Error:', error.message);
+            console.error('Error:', error);
         }
     };
 
     useEffect(() => {
         updateAndFetchData();
-    }, []); 
-
+    }, [puuid, server_name]); 
+/*
     const formatElapsedTime = (timestamp) => {
         if (!timestamp) {
             return 'Loading...';
@@ -268,122 +283,163 @@ const DisplayPlayer = ({playerData}) => {
             return `${days} ${days === 1 ? 'day' : 'days'} ago`;
         }
     };   
-    
+*/    
   // Render JSX
     return (
-        <>
-            <div className="text-center pb-5">
-                <h1 className="mb-3">{gameName}</h1>
-                <h5 className="mb-3">{server_name}</h5>
+    <>
+        <div className='text-center'>
+            <div className='d-flex flex-column'>
+            <div className='d-flex justify-content-around sticky-top'>
+                {/* Account Info */}
+                <div className='col-3 flex-column d-flex align-items-center justify-content-center '>
                 <div>
-                    <h6>Number of ratings for this player: <span> {updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></h6>
-                    <p className="mt-3">Last updated: <span>{updatedData ? formatElapsedTime(updatedData.updated_player_averages.last_click_timestamp) : 'Loading...'}</span></p>
-                    <div className="text-center">
-                        <label className="mb-2">Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></label>
+                    <img
+                    src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304'
+                    alt='profile image'
+                    className='profile-pics border border-dark'
+                    />
+                    <div className='mt-1'>
+                        <span className='rounded bg-dark w-25 p-1 text-light'>{playerProfileData ? playerProfileData.player_level : '...'}</span>
+                        <h2><span> {`${gameName}`} </span><span className="text-secondary h6">#{`${tagLine}`}</span></h2>
+                        <div>Total reviews: <span>{updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></div>
+                        <div>Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></div>
                     </div>
                 </div>
-                <div className="row justify-content-center mt-0 mt-md-5">
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Cs'ing</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Map Awareness</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Team Fighting</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.team_fighting_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
+                <div className='row'>
+                    <div className='d-flex mt-2'>
+                        <button onClick={() => handleButtonClick(true)} className={`btn btn-light btn-med flex-grow-1 me-1 ${showRankedData ? 'active' : ''}`}>Match History</button>
+                        <button onClick={() => handleButtonClick(false)} className={`btn btn-dark border border-dark btn-med flex-grow-1 ${!showRankedData ? 'active' : ''}`}>Reviews</button>
                     </div>
                 </div>
-                <div className="row justify-content-center mt-0 mt-md-5">
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Intentional Feeding</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</p>
+                </div>
+                {showRankedData ? (
+                <div className='border border-primary d-flex col align-items-center justify-content-center'>
+                <div className='d-flex justify-content-center'>
+                    <div className='me-5'>
+                    <div className='h6'>Solo / Duo</div>
+                    <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                    <div>
+                        <div className='border'>
+                            <div className='h3 mb-0'>{playerProfileData ? playerProfileData.player_Tier : '...'}
+                                <span className='ms-2 me-2'>{playerProfileData ? playerProfileData.player_Rank : '...'}</span>
+                            </div>
                         </div>
+                        <p className='h6 text-secondary'>{playerProfileData ? playerProfileData.player_LP : '...'}<span> LP</span></p>
+                        <div className='h6'><span className='text-primary'>{playerProfileData ? playerProfileData.player_Ranked_Wins : '...'}</span> | <span className='text-danger'>{playerProfileData ? playerProfileData.player_Ranked_Losses : '...'}</span></div>
+                        <div className='h6 text-secondary'>{playerProfileData ? playerProfileData.calculated_Player_WR+'%': '...'}</div>
                     </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Toxicity</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
                     </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Tiltability</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.tilt_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
+                    <div>
+                    <div className='h6'>Flex 5v5</div>
+                    <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                    <div>
+                        <div className='border'><div className='h3 mb-0'>Platinum<span className='ms-2 me-2'>II</span></div></div>
+                        <p className='h6 text-secondary'>69 LP</p>
+                        <div className='h6'><span className='text-primary'>200</span> | <span className='text-danger'>100</span></div>
+                        <div className='h6 text-secondary'>60% WR</div>
+                    </div>
                     </div>
                 </div>
-                <div className="row justify-content-center mt-0 mt-md-5">
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Kindness</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</p>
+                </div>
+                ) : (
+                <div className='col d-flex'>
+                    <div className='p1 col'>
+                    <div className="row">
+                        <div className="col m-1">
+                                <div className="mb-1">Cs'ing</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1">
+                                <div>Map Awareness</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1"> 
+                                <div className="mb-1">Team Fighting</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.team_fighting_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Laning / Jungling</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</p>
+                    <div className="row">
+                        <div className="col m-1"> 
+                                <div className="mb-1">Intentional Feeding</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1"> 
+                                <div className="mb-1">Toxicity</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1"> 
+                                <div className="mb-1">Tiltability</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.tilt_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Carry-ability</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.carry_score_avg} / 5` : 'Loading...'}</p>
+                    <div className="row">
+                        <div className="col m-1"> 
+                                <div className="mb-2">Kindness</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</div>
                         </div>
+                        <div className="col m-1"> 
+                                <div className="mb-2">Laning / Jungling</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1"> 
+                                <div className="mb-2">Carry-ability</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.carry_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col m-1"> 
+                                <div className="mb-2">Shot calling</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                        <div className="col m-1"> 
+                                <div className="mb-2">Play again?</div>
+                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small></div>
+                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</div>
+                                <div>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 5` : 'Loading...'}</div>
+                        </div>
+                    </div>
+                    <div className="text-center mt-4">
+                        <div className="border col-9 col-md-5 mx-auto"/></div>
                     </div>
                 </div>
-                <div className="row justify-content-center mt-0 mt-md-5">
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Shot calling</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-md-2 mt-4 mt-md-0">
-                        <div className="form-group text-center mt-2 mt-md-1">
-                            <label className="mb-2 h5">Play again?</label>
-                            <p><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small></p>
-                            <p className="h4">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</p>
-                            <p>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 5` : 'Loading...'}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="text-center mt-4">
-                    <div className="border col-9 col-md-5 mx-auto"/>
-                </div>
-                <DisplayPlayerReviews puuid = {puuid} />
+                )}
             </div>
-        </>
+            </div>
+        </div>
+      {showHistory ? (
+      <div className='d-flex justify-content-around mt-5'>
+        <div className='col-6'>
+          <MatchCard/>
+        </div>
+      </div>
+      ):(
+      <div className='d-flex justify-content-around mt-5'>
+        <div className='col-6 border rounded border-dark'>
+          <DisplayPlayerReviews puuid={puuid}/>
+        </div>
+      </div>
+      )}
+    </>
     );
 }
 
