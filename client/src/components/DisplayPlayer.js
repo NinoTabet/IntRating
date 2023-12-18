@@ -292,136 +292,134 @@ const DisplayPlayer = ({playerData}) => {
             <div className='d-flex justify-content-around sticky-top'>
                 {/* Account Info */}
                 <div className='col-3 flex-column d-flex align-items-center justify-content-center '>
-                <div>
-                    <img
-                    src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304'
-                    alt='profile image'
-                    className='profile-pics border border-dark'
-                    />
-                    <div className='mt-1'>
-                        <span className='rounded bg-dark w-25 p-1 text-light'>{playerProfileData ? playerProfileData.player_level : '...'}</span>
-                        <h2><span> {`${gameName}`} </span><span className="text-secondary h6">#{`${tagLine}`}</span></h2>
-                        <div>Total reviews: <span>{updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></div>
-                        <div>Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></div>
+                    <div>
+                        <img
+                        src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304'
+                        alt='profile image'
+                        className='profile-pics border border-dark'
+                        />
+                        <div className='mt-1'>
+                            <span className='rounded bg-dark w-25 p-1 text-light'>{playerProfileData ? playerProfileData.player_level : '...'}</span>
+                            <h2><span> {`${gameName}`} </span><span className="text-secondary h6">#{`${tagLine}`}</span></h2>
+                            <div>Total reviews: <span>{updatedData ? `${updatedData.total_number_of_ratings.count}` : 'Loading...'}</span></div>
+                            <div>Overall rating: <span>{updatedData ? `${updatedData.updated_player_averages.overall_avg} / 5` : 'Loading...'}</span></div>
+                        </div>
                     </div>
-                </div>
-                <div className='row'>
-                    <div className='d-flex mt-2'>
-                        <button onClick={() => handleButtonClick(true)} className={`btn btn-light btn-med flex-grow-1 me-1 ${showRankedData ? 'active' : ''}`}>Match History</button>
-                        <button onClick={() => handleButtonClick(false)} className={`btn btn-dark border border-dark btn-med flex-grow-1 ${!showRankedData ? 'active' : ''}`}>Reviews</button>
+                    <div className='row'>
+                        <div className='d-flex mt-2'>
+                            <button onClick={() => handleButtonClick(true)} className={`btn btn-light btn-med flex-grow-1 me-1 ${showRankedData ? 'active' : ''}`}>Match History</button>
+                            <button onClick={() => handleButtonClick(false)} className={`btn btn-dark border border-dark btn-med flex-grow-1 ${!showRankedData ? 'active' : ''}`}>Reviews</button>
+                        </div>
                     </div>
-                </div>
                 </div>
                 {showRankedData ? (
                 <div className='border border-primary d-flex col align-items-center justify-content-center'>
-                <div className='d-flex justify-content-center'>
-                    <div className='me-5'>
-                    <div className='h6'>Solo / Duo</div>
-                    <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
-                    <div>
-                        <div className='border'>
-                            <div className='h3 mb-0'>{playerProfileData ? playerProfileData.player_Tier : '...'}
-                                <span className='ms-2 me-2'>{playerProfileData ? playerProfileData.player_Rank : '...'}</span>
+                    <div className='d-flex justify-content-center'>
+                        <div className='me-5'>
+                            <div className='h6'>Solo / Duo</div>
+                                <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                                <div>
+                                    <div className='border'>
+                                        <div className='h3 mb-0'>{playerProfileData ? playerProfileData.player_Tier : '...'}
+                                            <span className='ms-2 me-2'>{playerProfileData ? playerProfileData.player_Rank : '...'}</span>
+                                        </div>
+                                    </div>
+                                    <p className='h6 text-secondary'>{playerProfileData ? playerProfileData.player_LP : '...'}<span> LP</span></p>
+                                    <div className='h6'><span className='text-primary'>{playerProfileData ? playerProfileData.player_Ranked_Wins : '...'}</span> | <span className='text-danger'>{playerProfileData ? playerProfileData.player_Ranked_Losses : '...'}</span></div>
+                                    <div className='h6 text-secondary'>{playerProfileData ? playerProfileData.calculated_Player_WR+'%': '...'}</div>
+                                </div>
                             </div>
+                        <div>
+                        <div className='h6'>Flex 5v5</div>
+                        <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                        <div>
+                            <div className='border'><div className='h3 mb-0'>Platinum<span className='ms-2 me-2'>II</span></div></div>
+                            <div className='h6 text-secondary'>69 LP</div>
+                            <div className='h6'><span className='text-primary'>200</span> | <span className='text-danger'>100</span></div>
+                            <div className='h6 text-secondary'>60% WR</div>
                         </div>
-                        <p className='h6 text-secondary'>{playerProfileData ? playerProfileData.player_LP : '...'}<span> LP</span></p>
-                        <div className='h6'><span className='text-primary'>{playerProfileData ? playerProfileData.player_Ranked_Wins : '...'}</span> | <span className='text-danger'>{playerProfileData ? playerProfileData.player_Ranked_Losses : '...'}</span></div>
-                        <div className='h6 text-secondary'>{playerProfileData ? playerProfileData.calculated_Player_WR+'%': '...'}</div>
+                        </div>
                     </div>
-                    </div>
-                    <div>
-                    <div className='h6'>Flex 5v5</div>
-                    <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
-                    <div>
-                        <div className='border'><div className='h3 mb-0'>Platinum<span className='ms-2 me-2'>II</span></div></div>
-                        <p className='h6 text-secondary'>69 LP</p>
-                        <div className='h6'><span className='text-primary'>200</span> | <span className='text-danger'>100</span></div>
-                        <div className='h6 text-secondary'>60% WR</div>
-                    </div>
-                    </div>
-                </div>
                 </div>
                 ) : (
                 <div className='col d-flex'>
                     <div className='p1 col'>
                     <div className="row">
                         <div className="col m-1">
-                                <div className="mb-1">Cs'ing</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Cs'ing</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1">
-                                <div>Map Awareness</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Map Awareness</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-1">Team Fighting</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.team_fighting_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Team Fighting</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.team_fighting_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                                <div className="mb-1">Intentional Feeding</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Intentional Feeding</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-1">Toxicity</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Toxicity</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-1">Tiltability</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.tilt_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Tiltability</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.tilt_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                                <div className="mb-2">Kindness</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Kindness</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-2">Laning / Jungling</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Laning / Jungling</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-2">Carry-ability</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.carry_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Carry-ability</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.carry_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                                <div className="mb-2">Shot calling</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</div>
+                            <div>Shot calling</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                                <div className="mb-2">Play again?</div>
-                                <div><small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small></div>
-                                <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</div>
-                                <div>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 5` : 'Loading...'}</div>
+                            <div>Play again?</div>
+                            <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small>
+                            <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</div>
+                            <div>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 5` : 'Loading...'}</div>
                         </div>
-                    </div>
-                    <div className="text-center mt-4">
-                        <div className="border col-9 col-md-5 mx-auto"/></div>
                     </div>
                 </div>
+            </div>
                 )}
             </div>
             </div>
