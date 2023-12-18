@@ -685,7 +685,7 @@ app.get("/riot_api/match_history", async (req, res) => {
     const region = regionCollection.rows[0].region;
 
     // collects recent 20 game match history
-    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1&api_key=${RIOT_API}`);
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3&api_key=${RIOT_API}`);
 
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
@@ -711,14 +711,13 @@ app.get("/riot_api/match_history", async (req, res) => {
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
-      const game_end_time = gameStats.data.info.gameEndTimestamp;
       const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVissionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
       const total_pings = pings.reduce((total, ping) => total + ping, 0); // fix
 
       // kill participation calculation
       const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === player_data.teamId);
       const player_team_kills = player_team_Id.reduce((total, player) => total + player.kills, 0);
-      const kill_participation = ((player_data.kills / player_team_kills + "%") * 100).toFixed(0); // fix
+      const kill_participation = (((player_data.kills + player_data.assists) / player_team_kills) * 100).toFixed(0); // fix
 
       // TODO participants is tbd on if I send an array or just an obj !!!!!!!!!!!!!!!!!!!!!!!!!!!!
       const participants = [player_data.riotIdName]; // fix
@@ -734,7 +733,6 @@ app.get("/riot_api/match_history", async (req, res) => {
         kill_participation: kill_participation, // int - kill participation percentage (ex. 76%)
         calculated_kda: calculated_kda, // int - (K+A)/D to 2 decimal places (ex. 7.00)
         items: items, // array - item numbers (ex. [35, 8, 19, ...])
-        game_end_time: game_end_time, // int - unix time stamp for end of game time (ex. 1637825752)
         pings: pings, // array - number of pings per ping (ex. [ 1, 0, 50, 12, 0, ... ])
         total_pings: total_pings // int - total sum of pings (ex. 82)
       };

@@ -425,11 +425,17 @@ const DisplayPlayer = ({playerData}) => {
             </div>
         </div>
       {showHistory ? (
-      <div className='d-flex justify-content-around mt-5'>
-        <div className='col-6'>
-          <MatchCard/>
+        <div className='d-flex justify-content-around mt-5'>
+            <div className='col-6'>
+                {MatchHistory === null && <p className="text-center">Loading match history...</p>}
+                {MatchHistory && MatchHistory.length > 0 && (
+                MatchHistory.map((match, index) => (
+                    <MatchCard key={index} match={match} />
+                ))
+                )}
+                {MatchHistory && MatchHistory.length === 0 && <p>No match history available.</p>}
+            </div>
         </div>
-      </div>
       ):(
       <div className='d-flex justify-content-around mt-5'>
         <div className='col-6 border rounded border-dark'>
