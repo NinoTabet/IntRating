@@ -611,23 +611,6 @@ app.listen(port, () => {
 
 // <----- Everything past this point, requires riot's api and is mainly used for testing ----->
 
-// player search NO LONGER NEEDED. check "/search" for the integration of the below code
-/*
-app.get("/riot_api/player_search", async (req, res) => {
-  const { gameName, tagLine, region } = req.query;
-  try {
-    // checks if player exists
-    const playerSearch = await axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}?api_key=${RIOT_API}`);
-    
-    const player_data = playerSearch.data;
-
-    res.json(player_data);
-
-  } catch (error) {
-    res.status(404).json("Player not found. Please check the spelling of the name and tag line");
-  }
-});*/
-
 // loads user profile data
 app.get("/riot_api/player_profile", async (req, res) => {
   
@@ -654,6 +637,7 @@ app.get("/riot_api/player_profile", async (req, res) => {
       const player_icon = playerIdSearch.data.profileIconId;
       const playerProfileData = {player_level, player_icon};
       res.json(playerProfileData);
+      return;
     }
     // player ranked data
     const player_Rank = playerRankedData.data[soloQ].rank; 
@@ -679,6 +663,8 @@ app.get("/riot_api/player_profile", async (req, res) => {
   }
 });
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 // collects 20 games of match history and responds with relevant data in the form of an object called - matchData
 app.get("/riot_api/match_history", async (req, res) => {
 
@@ -693,23 +679,35 @@ app.get("/riot_api/match_history", async (req, res) => {
     const region = regionCollection.rows[0].region;
 
     // collects recent 20 game match history
-    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3&api_key=${RIOT_API}`);
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`);
 
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
 
-    // array to store match data for each game
-    const matchDataArray = [];
+    // array to store promises for match data
+    const matchDataPromises = [];
 
     // loops through the array of gameIds
     for (const gameId of gameIds) {
+      matchDataPromises.push(
+        axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
+      );
+      await sleep(100);
+    }
 
-      // collects game data looping
-      const gameStats = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
-  
+    // use Promise.all to wait for all API calls to complete
+    const gameStatsResponses = await Promise.all(matchDataPromises);
+
+    // array to store match data for each game
+    const matchDataArray = [];
+
+    // process each API response
+    for (const gameStats of gameStatsResponses) {
+
       const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
+
       const player_data = gameStats.data.info.participants[index_puuid];
-      
+
       const kda = (player_data.kills+'/'+player_data.deaths+'/'+player_data.assists);
       const calculated_kda = ((player_data.kills + player_data.assists) / player_data.deaths).toFixed(2);
       const champion_played = player_data.championName;
@@ -767,6 +765,7 @@ app.get("/riot_api/match_history", async (req, res) => {
       };
 
       matchDataArray.push(matchData);
+      
     }
 
     // Send the array of match data once after the loop is completed

@@ -245,13 +245,18 @@ const DisplayPlayer = ({playerData}) => {
 
             setUpdatedData(updatedData);
 
-            const riotApiProfileData = await fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
-            const rawProfileData = await riotApiProfileData.json();
+            const fetchProfileData = fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
+            const fetchMatchHistory = fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
+            
+            // Use Promise.all to make both API calls concurrently
+            const [profileDataResponse, matchHistoryResponse] = await Promise.all([fetchProfileData, fetchMatchHistory]);
+            
+            const rawProfileData = await profileDataResponse.json();
             setPlayerProfileData(rawProfileData);
 
-            const riotApiMatchHistory = await fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
-            const matchHistoryData = await riotApiMatchHistory.json();
+            const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
+
         } catch (error) {
             console.error('Error:', error);
         }
@@ -295,7 +300,7 @@ const DisplayPlayer = ({playerData}) => {
                     <div>
                     {playerProfileData && playerProfileData.player_icon && (
                         <img
-                        src={require(`../../public/content/Profile Icons/${playerProfileData.player_icon}.jpg`)}
+                        src={require(`../../public/content/Profile Icons/${playerProfileData.player_icon}.png`)}
                         alt='profile image'
                         className='profile-pics border border-dark'
                         />
