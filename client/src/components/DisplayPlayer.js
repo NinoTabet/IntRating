@@ -293,11 +293,13 @@ const DisplayPlayer = ({playerData}) => {
                 {/* Account Info */}
                 <div className='col-3 flex-column d-flex align-items-center justify-content-center '>
                     <div>
+                    {playerProfileData && playerProfileData.player_icon && (
                         <img
-                        src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304'
+                        src={require(`../../public/content/Profile Icons/${playerProfileData.player_icon}.jpg`)}
                         alt='profile image'
                         className='profile-pics border border-dark'
                         />
+                    )}
                         <div className='mt-1'>
                             <span className='rounded bg-dark w-25 p-1 text-light'>{playerProfileData ? playerProfileData.player_level : '...'}</span>
                             <h2><span> {`${gameName}`} </span><span className="text-secondary h6">#{`${tagLine}`}</span></h2>
@@ -346,19 +348,19 @@ const DisplayPlayer = ({playerData}) => {
                     <div className='p1 col'>
                     <div className="row">
                         <div className="col m-1">
-                            <div>Cs'ing</div>
+                            <div className="fw-bold">Cs'ing</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.creep_score_avg) : 0, 'csing').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.creep_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1">
-                            <div>Map Awareness</div>
+                            <div className="fw-bold">Map Awareness</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.map_awareness_score_avg) : 0, 'MapAwareness').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.map_awareness_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Team Fighting</div>
+                            <div className="fw-bold">Team Fighting</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.team_fighting_score_avg) : 0, 'TeamFighting').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.team_fighting_score_avg} / 5` : 'Loading...'}</div>
@@ -366,19 +368,19 @@ const DisplayPlayer = ({playerData}) => {
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                            <div>Intentional Feeding</div>
+                            <div className="fw-bold">Intentional Feeding</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.feeding_score_avg) : 0, 'IntentionalFeeding').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.feeding_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Toxicity</div>
+                            <div className="fw-bold">Toxicity</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.toxicity_score_avg) : 0, 'Toxicity').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.toxicity_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Tiltability</div>
+                            <div className="fw-bold">Tiltability</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.tilt_score_avg) : 0, 'Tiltability').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.tilt_score_avg} / 5` : 'Loading...'}</div>
@@ -386,19 +388,19 @@ const DisplayPlayer = ({playerData}) => {
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                            <div>Kindness</div>
+                            <div className="fw-bold">Kindness</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.kindness_score_avg) : 0, 'Kindness').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.kindness_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Laning / Jungling</div>
+                            <div className="fw-bold">Laning / Jungling</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.laning_score_avg) : 0, 'Laning/Jungling').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.laning_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Carry-ability</div>
+                            <div className="fw-bold">Carry-ability</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.carry_score_avg) : 0, 'CarryAbility').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.carry_score_avg} / 5` : 'Loading...'}</div>
@@ -406,13 +408,13 @@ const DisplayPlayer = ({playerData}) => {
                     </div>
                     <div className="row">
                         <div className="col m-1"> 
-                            <div>Shot calling</div>
+                            <div className="fw-bold">Shot calling</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.shot_calling_score_avg) : 0, 'ShotCalling').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.shot_calling_score_avg} / 5` : 'Loading...'}</div>
                         </div>
                         <div className="col m-1"> 
-                            <div>Play again?</div>
+                            <div className="fw-bold">Play again?</div>
                             <small className="text-muted">{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').text}</small>
                             <div>{generateSectionRating(updatedData ? parseFloat(updatedData.updated_player_averages.play_again_avg) : 0, 'PlayAgain').stars}</div>
                             <div>{updatedData ? `${updatedData.updated_player_averages.play_again_avg} / 5` : 'Loading...'}</div>

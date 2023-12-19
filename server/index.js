@@ -644,16 +644,24 @@ app.get("/riot_api/player_profile", async (req, res) => {
     const playerIdSearch = await axios.get(`https://${server_tag}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
     const playerId = playerIdSearch.data.id;
 
-    console.log(playerId);
+    console.log('player id: '+playerId);
     const playerRankedData = await axios.get(`https://${server_tag}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`);
-    
+    console.log('playerRankedData pulled successfully');
+
+    const soloQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_SOLO_5x5");
+    if(!soloQ){
+      const player_level = playerIdSearch.data.summonerLevel;
+      const player_icon = playerIdSearch.data.profileIconId;
+      const playerProfileData = {player_level, player_icon};
+      res.json(playerProfileData);
+    }
     // player ranked data
-    const player_Rank = playerRankedData.data[1].rank; 
-    const queue_Type = playerRankedData.data[1].queueType;
-    const player_Tier = playerRankedData.data[1].tier;
-    const player_LP = playerRankedData.data[1].leaguePoints;
-    const player_Ranked_Wins = playerRankedData.data[1].wins;
-    const player_Ranked_Losses = playerRankedData.data[1].losses;
+    const player_Rank = playerRankedData.data[soloQ].rank; 
+    const queue_Type = playerRankedData.data[soloQ].queueType;
+    const player_Tier = playerRankedData.data[soloQ].tier;
+    const player_LP = playerRankedData.data[soloQ].leaguePoints;
+    const player_Ranked_Wins = playerRankedData.data[soloQ].wins;
+    const player_Ranked_Losses = playerRankedData.data[soloQ].losses;
     const calculated_Player_WR = ((player_Ranked_Wins / (player_Ranked_Wins + player_Ranked_Losses)) * 100).toFixed(1);
     
     // player profile data
@@ -711,8 +719,29 @@ app.get("/riot_api/match_history", async (req, res) => {
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
-      const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVissionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
+      const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVisionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
       const total_pings = pings.reduce((total, ping) => total + ping, 0); // fix
+
+      const maxPingIndex = pings.indexOf(Math.max(...pings));
+
+      const pingTypes = [
+        'All In',
+        'Assist Me',
+        'Bait',
+        'Basic',
+        'Command',
+        'Danger',
+        'Enemy Missing',
+        'Enemy Vision',
+        'Get Back',
+        'Hold',
+        'NeedVision',
+        'On My Way',
+        'Push',
+        'VisionCleared'
+      ];
+      
+      const most_used_ping = pingTypes[maxPingIndex];
 
       // kill participation calculation
       const player_team_Id = gameStats.data.info.participants.filter(player => player.teamId === player_data.teamId);
@@ -733,7 +762,7 @@ app.get("/riot_api/match_history", async (req, res) => {
         kill_participation: kill_participation, // int - kill participation percentage (ex. 76%)
         calculated_kda: calculated_kda, // int - (K+A)/D to 2 decimal places (ex. 7.00)
         items: items, // array - item numbers (ex. [35, 8, 19, ...])
-        pings: pings, // array - number of pings per ping (ex. [ 1, 0, 50, 12, 0, ... ])
+        most_used_ping: most_used_ping,
         total_pings: total_pings // int - total sum of pings (ex. 82)
       };
 
