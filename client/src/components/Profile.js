@@ -49,9 +49,10 @@ const Profile = () => {
       <h1>{userData ? `${userData.usernameSearch.username}` : 'Loading...'}</h1>
       <h2 className='mt-5'>Your reviews</h2>
       <div className='mt-5 card-container mx-auto' style={{ maxHeight: '500px', overflowY: 'auto' }}>
-        {reviewList && reviewList.reverse().map((review) => (
+        {reviewList && reviewList.reverse().map((review, index) => (
           <div key={review.rating_id} className="mb-3">
-            <Review review={review} playerNames={playerNames}/>
+            {/* Pass the corresponding playerNames for each review */}
+            <Review review={review} playerNames={playerNames[index]} />
           </div>
         ))}
       </div>

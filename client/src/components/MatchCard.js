@@ -21,7 +21,6 @@ const MatchCard = ({ match }) => {
     kill_participation,
   } = match;
 
-  
   return (
     <div className="rounded border border-dark p-1 mb-1">
       <div className="border-bottom align-items-center d-flex justify-content-between">

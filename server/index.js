@@ -71,21 +71,25 @@ app.post("/rating", verifyToken, async (req, res) => {
       [puuid]
     );
 
-    if (searchPlayer.rows.length == 0) {
+    let player_id;
+
+    if (searchPlayer.rows.length === 0) {
       // Player not found in the database, insert the record
       const saveUser = await pool.query(
-        "INSERT INTO player (puuid, server_name) VALUES ($1, $2)",
+        "INSERT INTO player (puuid, server_name) VALUES ($1, $2) RETURNING player_id",
         [puuid, server_name]
       );
-    }else{
-      //updates the server in database
+      player_id = saveUser.rows[0].player_id;
+    } else {
+      // Player found in the database, get the player_id
+      player_id = searchPlayer.rows[0].player_id;
+    
+      // Update the server in the database
       const updatePlayer = await pool.query(
         "UPDATE player SET server_name = $1 WHERE puuid = $2",
         [server_name, puuid]
       );
     }
-    console.log(puuid);
-    const player_id = searchPlayer.rows[0].player_id;
 
     const {
         creep_score,
@@ -188,55 +192,37 @@ app.post("/rating", verifyToken, async (req, res) => {
 
 // profile info load
 app.get("/profile", verifyToken, async (req, res) => {
-  // userId associated with the token
   const userId = req.user.userId;
+
   if (!userId) {
     return res
-    .status(401)
-    .json({ message: "Unauthorized request. Please log in before performing this action." });
+      .status(401)
+      .json({ message: "Unauthorized request. Please log in before performing this action." });
   }
 
   try {
-    // searches for all reviews associated with the userId found in the jwt
-    const reviewSearch = await pool.query(
-      "SELECT * FROM ratings WHERE user_id = ($1)",
-      [userId]
-    );
+    const reviewSearch = await pool.query("SELECT * FROM ratings WHERE user_id = ($1)", [userId]);
 
-    // Initialize an array to store player IDs from reviews
-    const playerIds = [];
-
-    // Loop through reviews to collect player IDs
-    reviewSearch.rows.forEach((review) => {
-      playerIds.push(review.player_id);
-    });
-
+    const playerIds = reviewSearch.rows.map((review) => review.player_id);
+    const usernameSearch = await pool.query("SELECT username FROM user_accounts WHERE user_id = $1", [userId]);
     if (playerIds.length === 0) {
-      // No player IDs found, skip to fetching the username
-      const usernameSearch = await pool.query(
-        "SELECT username FROM user_accounts WHERE user_id = $1",
-        [userId]
-      );
-
       const responseData = {
         reviewSearch: reviewSearch.rows,
-        playerNames: [],  // No player names to fetch
+        playerNames: [],
         usernameSearch: usernameSearch.rows[0],
       };
 
       return res.json(responseData);
     }
 
-    // Use the collected player IDs to fetch usernames
     const puuidCollection = await pool.query(
       "SELECT puuid FROM player WHERE player_id = ANY($1)",
       [playerIds]
     );
 
-    // Extracting the first puuid from the collection
+    // Extracting the server name from the collection
     const puuid = puuidCollection.rows[0].puuid;
 
-    // Fetching the server name for the given puuid
     const serverCollection = await pool.query(
       "SELECT server_name FROM player WHERE puuid = ($1)",
       [puuid]
@@ -245,7 +231,6 @@ app.get("/profile", verifyToken, async (req, res) => {
     // Extracting the server name from the collection
     const serverName = serverCollection.rows[0].server_name;
 
-    // Fetching the region for the given server name
     const regionCollection = await pool.query(
       "SELECT region FROM server WHERE server_name = ($1)",
       [serverName]
@@ -253,28 +238,26 @@ app.get("/profile", verifyToken, async (req, res) => {
 
     // Extracting the region from the collection
     const region = regionCollection.rows[0].region;
+    
+    const playerNamesPromises = [];
 
-    // Initialize an array to store player names
-    const playerNames = [];
-
-    // Loop through puuids and fetch player names
     for (const { puuid } of puuidCollection.rows) {
       try {
-        const response = await axios.get(
-          `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`
+        // Push the promise to fetch the Riot API data into playerNamesPromises
+        playerNamesPromises.push(
+          axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`)
         );
-
-        playerNames.push(response.data.gameName);
+        await sleep(100);
       } catch (error) {
-        //console.error("Error fetching player name:", error.message);
+        console.error(error);
+        return res.status(500).json({ message: "Error collecting account names from Riot API" });
       }
     }
 
-    // Use the userId to fetch the associated username
-    const usernameSearch = await pool.query(
-      "SELECT username FROM user_accounts WHERE user_id = $1",
-      [userId]
-    );
+    const playerNamesResponse = await Promise.all(playerNamesPromises);
+
+    // Map puuids to gameNames
+    const playerNames = playerNamesResponse.map((response) => response.data.gameName);
 
     const responseData = {
       reviewSearch: reviewSearch.rows,
@@ -288,7 +271,6 @@ app.get("/profile", verifyToken, async (req, res) => {
     return res.status(400).json({ message: "Unauthorized request. " });
   }
 });
-
 // !!---------- After this line, jwt is not needed ----------!!
 
 // player search
@@ -336,7 +318,6 @@ app.post("/api/update-averages", async (req, res) => {
   try {
     const { puuid } = req.body;
 
-    console.log("update")
     // Locate player id
     const playerResult = await pool.query(
       "SELECT player_id FROM player WHERE puuid = ($1)",
@@ -344,6 +325,11 @@ app.post("/api/update-averages", async (req, res) => {
     );
 
     const player_id = playerResult.rows[0]?.player_id;
+
+    if (!player_id){
+      res.status(404).send('No ratings found');
+      return;
+    }
 
     // Check if there is an existing entry for the player_id
     const existingEntry = await pool.query(
@@ -577,7 +563,7 @@ app.post("/login", async(req, res)=>{
 
     const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
     if (passwordMatch) {
-      const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '6h' });
+      const token = jwt.sign({ userId: user.rows[0].user_id  }, process.env.JWT_SECRET, { expiresIn: '12h' });
       res.status(200).json({ message: "Log in successful.", token: token });
       return token;
     } else {
@@ -627,41 +613,68 @@ app.get("/riot_api/player_profile", async (req, res) => {
     const playerIdSearch = await axios.get(`https://${server_tag}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${RIOT_API}`);
     const playerId = playerIdSearch.data.id;
 
-    console.log('player id: '+playerId);
-    const playerRankedData = await axios.get(`https://${server_tag}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`);
-    console.log('playerRankedData pulled successfully');
-
-    const soloQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_SOLO_5x5");
-    if(!soloQ){
-      const player_level = playerIdSearch.data.summonerLevel;
-      const player_icon = playerIdSearch.data.profileIconId;
-      const playerProfileData = {player_level, player_icon};
-      res.json(playerProfileData);
-      return;
-    }
-    // player ranked data
-    const player_Rank = playerRankedData.data[soloQ].rank; 
-    const queue_Type = playerRankedData.data[soloQ].queueType;
-    const player_Tier = playerRankedData.data[soloQ].tier;
-    const player_LP = playerRankedData.data[soloQ].leaguePoints;
-    const player_Ranked_Wins = playerRankedData.data[soloQ].wins;
-    const player_Ranked_Losses = playerRankedData.data[soloQ].losses;
-    const calculated_Player_WR = ((player_Ranked_Wins / (player_Ranked_Wins + player_Ranked_Losses)) * 100).toFixed(1);
-    
-    // player profile data
     const player_level = playerIdSearch.data.summonerLevel;
     const player_icon = playerIdSearch.data.profileIconId;
+    const playerProfileData = {player_level, player_icon};
 
-    // putting all data in a single object
-    const playerProfileData = {player_Rank, queue_Type, player_Tier, player_LP, player_Ranked_Wins, player_Ranked_Losses, player_level, player_icon, calculated_Player_WR};
+    const playerRankedData = await axios.get(`https://${server_tag}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API}`);
 
-    console.log(playerProfileData);
-    res.json(playerProfileData);
-  
+    const soloQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_SOLO_5x5");
+    const flexQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_FLEX_SR");
+
+    if(soloQ<0 && flexQ<0){
+      console.log("yeet");
+      res.json(playerProfileData);
+      return;
+    }else if(soloQ<0 && flexQ>=0){
+      console.log('soloQ<0 && flexQ>=0');
+      const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
+      res.json({rankedFQ, playerProfileData});
+      return;
+    }else if(soloQ>=0 && flexQ<0){
+      console.log('soloQ>=0 && flexQ<0');
+      const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
+      res.json({rankedSQ, playerProfileData});
+      return;
+    }else{
+      console.log('else');
+      const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
+      const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
+      res.json({rankedSQ, rankedFQ, playerProfileData});
+      return;
+    }
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+function rankedDataSQ (playerRankedData, soloQ){
+  const player_Rank_SQ = playerRankedData.data[soloQ].rank; 
+  const queue_Type_SQ = playerRankedData.data[soloQ].queueType;
+  const player_Tier_SQ = playerRankedData.data[soloQ].tier;
+  const player_LP_SQ = playerRankedData.data[soloQ].leaguePoints;
+  const player_Ranked_Wins_SQ = playerRankedData.data[soloQ].wins;
+  const player_Ranked_Losses_SQ = playerRankedData.data[soloQ].losses;
+  const calculated_Player_WR_SQ = ((player_Ranked_Wins_SQ / (player_Ranked_Wins_SQ + player_Ranked_Losses_SQ)) * 100).toFixed(1);
+
+  const rankedSQ = {player_Rank_SQ, queue_Type_SQ, player_Tier_SQ, player_LP_SQ, player_Ranked_Wins_SQ, player_Ranked_Losses_SQ, calculated_Player_WR_SQ};
+
+  return (rankedSQ);
+}
+
+function rankedDataFQ(playerRankedData, flexQ){
+  const player_Rank_FQ = playerRankedData.data[flexQ].rank; 
+  const queue_Type_FQ = playerRankedData.data[flexQ].queueType;
+  const player_Tier_FQ = playerRankedData.data[flexQ].tier;
+  const player_LP_FQ = playerRankedData.data[flexQ].leaguePoints;
+  const player_Ranked_Wins_FQ = playerRankedData.data[flexQ].wins;
+  const player_Ranked_Losses_FQ = playerRankedData.data[flexQ].losses;
+  const calculated_Player_WR_FQ = ((player_Ranked_Wins_FQ / (player_Ranked_Wins_FQ + player_Ranked_Losses_FQ)) * 100).toFixed(1);
+  
+  const rankedFQ = {player_Rank_FQ, queue_Type_FQ, player_Tier_FQ, player_LP_FQ, player_Ranked_Wins_FQ, player_Ranked_Losses_FQ, calculated_Player_WR_FQ};
+
+  return (rankedFQ);
+}
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 

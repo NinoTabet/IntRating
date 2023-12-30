@@ -21,7 +21,9 @@ const LogIn = ({ setCurrentPage }) => {
           });
           if (response.ok) {
               const { token } = await response.json();
-              Cookies.set("jwt_authorization", token);
+              Cookies.set("jwt_authorization", token, {
+                expires: new Date (token.exp * 1000)
+              });
               alert("You are now logged in!");
               setCurrentPage("home");
           } else {
