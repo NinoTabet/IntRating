@@ -247,7 +247,7 @@ const DisplayPlayer = ({playerData}) => {
             setRankedFQ(rawProfileData.rankedFQ || null);
             setPlayerProfileData(rawProfileData.playerProfileData);
 
-            console.log(rawProfileData.playerProfileData);
+            console.log(rawProfileData.playerProfileData); // needs fix
             const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
 
@@ -294,7 +294,7 @@ const DisplayPlayer = ({playerData}) => {
                     <div>
                     {playerProfileData && playerProfileData.player_icon && (
                         <img
-                        src={require(`../../public/content/Profile Icons/${playerProfileData.player_icon}.png`)}
+                        src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${playerProfileData.player_icon}.png`}
                         alt='profile image'
                         className='profile-pics border border-dark'
                         />
