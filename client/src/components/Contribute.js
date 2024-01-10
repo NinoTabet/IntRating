@@ -31,13 +31,20 @@ const Contribute = ({ handleSearchSuccess}) => {
     const [ selectedServer, setSelectedServer ] = useState(null);
 
     // saves player data
-    const [playerData, setPlayerData] = useState({});
-
+    const [gameName, setGameName] = useState("");
+    const [tagLine, setTagLine] = useState("");
       
-    const onSubmitForm = async e => {
+    const onSubmitForm = async (e) => {
         e.preventDefault();
-
-        const allFieldsFilled = (
+    
+        const [gameNameResult, tagLineResult] = extractUsernameAndTagline(full_username);
+    
+        // Remove trailing spaces from the gameName and replace spaces with '%20'
+        const trimmedGameName = gameNameResult.trim();
+        setGameName(encodeURIComponent(trimmedGameName));
+        setTagLine(tagLineResult);
+    
+        const allFieldsFilled =
             full_username &&
             selectedServer &&
             creep_score !== "" &&
@@ -49,15 +56,31 @@ const Contribute = ({ handleSearchSuccess}) => {
             kindness_score !== "" &&
             laning_score !== "" &&
             carry_score !== "" &&
-            shot_calling_score !== ""
-        );
+            shot_calling_score !== "";
     
         if (!allFieldsFilled) {
             alert("Please fill out all fields before contributing!");
             return;
         }
+    
         try {
-            const body = { full_username, server_name: selectedServer,creep_score, map_awareness_score, team_fighting_score, feeding_score, toxicity_score, tilt_score, kindness_score, laning_score, carry_score, shot_calling_score, review,play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null}
+            const body = {
+                gameName,
+                tagLine,
+                server_name: selectedServer,
+                creep_score,
+                map_awareness_score,
+                team_fighting_score,
+                feeding_score,
+                toxicity_score,
+                tilt_score,
+                kindness_score,
+                laning_score,
+                carry_score,
+                shot_calling_score,
+                review,
+                play_again: play_again === 'yes' ? 5 : play_again === 'no' ? 1 : null
+            };
             console.log(body);
             const post_response = await fetch(apiUrl + "/rating", {
                 method: "POST",
@@ -67,24 +90,28 @@ const Contribute = ({ handleSearchSuccess}) => {
                 },
                 body: JSON.stringify(body)
             });
-            const url = apiUrl + `/search?full_username=${encodeURIComponent(full_username)}&server_name=${encodeURIComponent(selectedServer)}`;
-            const get_response = await fetch(url, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        });
-        console.log(post_response);
-        if (post_response.ok) {
-            const data = await get_response.json();
-            setPlayerData({ original_username: data.original_username, server_name: selectedServer, tag_line : data.tag_line });
-            handleSearchSuccess({ original_username: data.original_username, server_name: selectedServer, tag_line : data.tag_line });
-        }else{
-            alert("Please log in before attempting to contribute a rating!");
-        }
+            const get_response = await fetch(apiUrl + `/search?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}&server_name=${encodeURIComponent(selectedServer)}`);
+            console.log(post_response);
+    
+            if (post_response.ok) {
+                const data = await get_response.json();           
+                handleSearchSuccess(data);
+            } else {
+                alert("Please log in before attempting to contribute a rating!");
+            }
         } catch (err) {
             console.error(err.message);
         }
     };
-  
+    
+    const extractUsernameAndTagline = (full_username) => {
+        const hashIndex = full_username.indexOf("#");
+        const gameNameResult = full_username.substring(0, hashIndex);
+        const tagLineResult = full_username.substring(hashIndex + 1);
+    
+        return [gameNameResult, tagLineResult];
+      };
+      
     return (
         <div className="text-center">
         <h1 className="text-center mb-3">CONTRIBUTE RATING</h1>

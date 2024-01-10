@@ -10,6 +10,7 @@ const Profile = () => {
 
   const [reviewList, setReviewList] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [playerNames, setPlayerNames] = useState([]);
 
   useEffect(() => {
     const fetchDataOnLoad = async () => {
@@ -28,6 +29,10 @@ const Profile = () => {
           if (Array.isArray(data.reviewSearch)) {
             setReviewList(data.reviewSearch);
           }
+          // Check if data.playerNames is an array before setting it
+          if (Array.isArray(data.playerNames)) {
+          setPlayerNames(data.playerNames);
+          }
         }
       } catch (error) {
         console.error('Error:', error.message);
@@ -44,9 +49,10 @@ const Profile = () => {
       <h1>{userData ? `${userData.usernameSearch.username}` : 'Loading...'}</h1>
       <h2 className='mt-5'>Your reviews</h2>
       <div className='mt-5 card-container mx-auto' style={{ maxHeight: '500px', overflowY: 'auto' }}>
-        {reviewList && reviewList.reverse().map((review) => (
+        {reviewList && reviewList.reverse().map((review, index) => (
           <div key={review.rating_id} className="mb-3">
-            <Review review={review} />
+            {/* Pass the corresponding playerNames for each review */}
+            <Review review={review} playerNames={playerNames[index]} />
           </div>
         ))}
       </div>

@@ -7,7 +7,5 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App apiUrl={apiUrl} />
-  </React.StrictMode>
+  <App apiUrl={apiUrl} />
 );
