@@ -25,7 +25,7 @@ const MatchCard = ({ match }) => {
     <div className="rounded border border-dark p-1 mb-1">
       <div className="border-bottom align-items-center d-flex justify-content-between">
         <div className="d-flex align-items-center">
-        <img src={require(`../../public/content/Champions/${champion_played}.jpg`)} alt='Champion image' className='champion-icon border border-dark me-2 rounded'></img>
+        <img src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${champion_played}.png`} alt='Champion image' className='champion-icon border border-dark me-2 rounded'></img>
           <div className="text-center">
             <div className="fw-bold">{kda}</div>
             <small className="text-muted">{calculated_kda} KDA</small></div>
@@ -44,7 +44,7 @@ const MatchCard = ({ match }) => {
               itemNumber !== 0 && (
                 <img
                   key={index}
-                  src={require(`../../public/content/Items/${itemNumber}.png`)}
+                  src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/item/${itemNumber}.png`}
                   alt={`item image ${itemNumber}`}
                   className='item-icon border border-dark me-2 rounded'
                 />
