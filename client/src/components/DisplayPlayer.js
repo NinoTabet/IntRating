@@ -247,7 +247,7 @@ const DisplayPlayer = ({playerData}) => {
             setRankedFQ(rawProfileData.rankedFQ || null);
             setPlayerProfileData(rawProfileData.playerProfileData);
 
-            console.log(rawProfileData.playerProfileData);
+            console.log(rawProfileData.playerProfileData); // needs fix
             const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
 
@@ -294,7 +294,7 @@ const DisplayPlayer = ({playerData}) => {
                     <div>
                     {playerProfileData && playerProfileData.player_icon && (
                         <img
-                        src={require(`../../public/content/Profile Icons/${playerProfileData.player_icon}.png`)}
+                        src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${playerProfileData.player_icon}.png`}
                         alt='profile image'
                         className='profile-pics border border-dark'
                         />
@@ -321,7 +321,7 @@ const DisplayPlayer = ({playerData}) => {
                                 <div className='h6'>Solo / Duo</div>
                                 {rankedSQ ? (
                                     <>
-                                        <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                                        <img src='' alt='profile image ' className='profile-pics border border-dark'></img>
                                         <div>
                                             <div className="text-center">
                                                 <div className='h3 mb-0'>{rankedSQ.player_Tier_SQ}
@@ -341,7 +341,7 @@ const DisplayPlayer = ({playerData}) => {
                                 <div className='h6'>Flex 5v5</div>
                                 {rankedFQ ? (
                                     <>
-                                        <img src='https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon5057.jpg?image=q_auto,f_webp,w_auto&amp;v=1700641403304' alt='profile image ' className='profile-pics border border-dark'></img>
+                                        <img src='' alt='profile image ' className='profile-pics border border-dark'></img>
                                         <div>
                                             <div className="text-center">
                                                 <div className='h3 mb-0'>{rankedFQ.player_Tier_FQ}
