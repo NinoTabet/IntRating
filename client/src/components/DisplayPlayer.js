@@ -243,11 +243,21 @@ const DisplayPlayer = ({playerData}) => {
             const [profileDataResponse, matchHistoryResponse] = await Promise.all([fetchProfileData, fetchMatchHistory]);
             
             const rawProfileData = await profileDataResponse.json();
+
+            if(!rawProfileData.rankedFQ && !rawProfileData.rankedSQ){
+                setPlayerProfileData(rawProfileData);
+                console.log('1'+playerProfileData);
+            }else{
+                setPlayerProfileData(rawProfileData.playerProfileData);
+                console.log('2'+playerProfileData);
+            }
+
             setRankedSQ(rawProfileData.rankedSQ || null);
             setRankedFQ(rawProfileData.rankedFQ || null);
-            setPlayerProfileData(rawProfileData.playerProfileData);
 
-            console.log(rawProfileData.playerProfileData); // needs fix
+            console.log('raw profile data:' + rawProfileData);
+
+
             const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
 
@@ -292,13 +302,13 @@ const DisplayPlayer = ({playerData}) => {
                 {/* Account Info */}
                 <div className='col-3 flex-column d-flex align-items-center justify-content-center '>
                     <div>
-                    {playerProfileData && playerProfileData.player_icon && (
-                        <img
-                        src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${playerProfileData.player_icon}.png`}
-                        alt='profile image'
-                        className='profile-pics border border-dark'
-                        />
-                    )}
+                        {playerProfileData && playerProfileData.player_icon && (
+                            <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${playerProfileData.player_icon}.png`}
+                            alt='profile image'
+                            className='profile-pics border border-dark'
+                            />
+                        )}
                         <div className='mt-1'>
                             <span className='rounded bg-dark w-25 p-1 text-light'>{playerProfileData ? playerProfileData.player_level : '...'}</span>
                             <h2><span> {`${gameName}`} </span><span className="text-secondary h6">#{`${tagLine}`}</span></h2>
