@@ -24,6 +24,7 @@ const Profile = () => {
         });
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
           setUserData(data);
           // Check if data.reviewSearch is an array before setting it to reviewList
           if (Array.isArray(data.reviewSearch)) {

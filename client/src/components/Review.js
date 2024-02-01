@@ -75,10 +75,7 @@ const Review = ({ review , playerNames}) => {
       <div className="card-body" style={{ textAlign: 'left' }}>
       <p className="card-title">
         <span className="fw-bold">Reviewed players: </span>
-        {/* Check if playerNames is an array before using map */}
-        {Array.isArray(playerNames) && playerNames.length > 0 && playerNames.map((playerName, index) => (
-          <span key={index}>{playerName} </span>
-        ))}
+        <span>{playerNames} </span>
       </p>
         <p className="card-text"><span className="fw-bold">Overall Rating: </span>{overallRating}</p>
         <p className="card-text"><span className="fw-bold">Highest Rated Field: </span>{highestRatedField}: {review[highestRatedField]}</p>
