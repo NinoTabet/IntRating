@@ -246,17 +246,12 @@ const DisplayPlayer = ({playerData}) => {
 
             if(!rawProfileData.rankedFQ && !rawProfileData.rankedSQ){
                 setPlayerProfileData(rawProfileData);
-                console.log('1'+playerProfileData);
             }else{
                 setPlayerProfileData(rawProfileData.playerProfileData);
-                console.log('2'+playerProfileData);
             }
 
             setRankedSQ(rawProfileData.rankedSQ || null);
             setRankedFQ(rawProfileData.rankedFQ || null);
-
-            console.log('raw profile data:' + rawProfileData);
-
 
             const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
