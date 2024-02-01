@@ -625,21 +625,17 @@ app.get("/riot_api/player_profile", async (req, res) => {
     const flexQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_FLEX_SR");
 
     if(soloQ<0 && flexQ<0){
-      console.log(playerProfileData);
       res.json(playerProfileData);
       return;
     }else if(soloQ<0 && flexQ>=0){
-      console.log('soloQ<0 && flexQ>=0');
       const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
       res.json({rankedFQ, playerProfileData});
       return;
     }else if(soloQ>=0 && flexQ<0){
-      console.log('soloQ>=0 && flexQ<0');
       const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
       res.json({rankedSQ, playerProfileData});
       return;
     }else{
-      console.log('else');
       const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
       const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
       res.json({rankedSQ, rankedFQ, playerProfileData});
