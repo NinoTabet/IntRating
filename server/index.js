@@ -258,7 +258,7 @@ app.get("/profile", verifyToken, async (req, res) => {
     const playerNamesResponse = await Promise.all(playerNamesPromises);
 
     // Map puuids to gameNames
-    const playerNames = playerNamesResponse.map((response) => response.data.gameName).reverse();
+    const playerNames = playerNamesResponse.map((response) => response.data.gameName)
 
     console.log(playerNames);
     const responseData = {
