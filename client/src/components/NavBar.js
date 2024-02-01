@@ -73,17 +73,6 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
                   Feedback
                 </a>
               </li>
-              <li className="nav-item">
-                  <a
-                    href="#"
-                    className={`nav-link px-2 text-light ${
-                      currentPage === 'playground' ? 'link-secondary' : ''
-                    }`}
-                    onClick={() => handleNavigation('playground')}
-                  >
-                    playground
-                  </a>
-                </li>
               {isLoggedIn && (
                 <>
                   <li className="nav-item">

@@ -9,7 +9,6 @@ import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
 import Profile from './components/Profile';
-import Playground from './components/Playground';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -43,8 +42,6 @@ const App = () => {
         return <Profile/>
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
-      case 'playground':
-        return <Playground/>
       default:
         return null;
     }

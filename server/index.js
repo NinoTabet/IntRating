@@ -201,9 +201,10 @@ app.get("/profile", verifyToken, async (req, res) => {
   }
 
   try {
-    const reviewSearch = await pool.query("SELECT * FROM ratings WHERE user_id = ($1)", [userId]);
+    const reviewSearch = await pool.query("SELECT * FROM ratings WHERE user_id = ($1) ORDER BY rating_id ASC", [userId]);
 
-    const playerIds = reviewSearch.rows.map((review) => review.player_id);
+    const playerIds = reviewSearch.rows.map((review) => review.player_id).sort((a, b) => a - b);
+    console.log(playerIds);
     const usernameSearch = await pool.query("SELECT username FROM user_accounts WHERE user_id = $1", [userId]);
     if (playerIds.length === 0) {
       const responseData = {
@@ -257,8 +258,9 @@ app.get("/profile", verifyToken, async (req, res) => {
     const playerNamesResponse = await Promise.all(playerNamesPromises);
 
     // Map puuids to gameNames
-    const playerNames = playerNamesResponse.map((response) => response.data.gameName);
+    const playerNames = playerNamesResponse.map((response) => response.data.gameName).reverse();
 
+    console.log(playerNames);
     const responseData = {
       reviewSearch: reviewSearch.rows,
       playerNames,

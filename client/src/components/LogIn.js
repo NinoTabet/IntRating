@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const LogIn = ({ setCurrentPage }) => {
-
+  console.log('API URL:', apiUrl);
   const [email_address, setEmail_address] = useState("");
   const [password, setPassword] = useState("");
 
