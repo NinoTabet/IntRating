@@ -625,7 +625,7 @@ app.get("/riot_api/player_profile", async (req, res) => {
     const flexQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_FLEX_SR");
 
     if(soloQ<0 && flexQ<0){
-      console.log("yeet");
+      console.log(playerProfileData);
       res.json(playerProfileData);
       return;
     }else if(soloQ<0 && flexQ>=0){
