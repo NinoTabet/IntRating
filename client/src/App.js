@@ -9,6 +9,7 @@ import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
 import Profile from './components/Profile';
+import Footer from './components/Footer';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -51,6 +52,7 @@ const App = () => {
       <div>
         <NavBar setCurrentPage={setCurrentPage} handleSearchSuccess={handleSearchSuccess} />
         {renderPage()}
+        <Footer/>
       </div>
   );
 };
