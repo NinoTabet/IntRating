@@ -28,3 +28,12 @@ nav{
 .item-icon{
   height: 25px;
 }
+.image-container {
+  width: 150px; /* Set width of the container */
+  height: 150px; /* Set height of the container */
+  overflow: hidden; /* Hide overflow */
+}
+.image-container img {
+  height: 200%; /* Ensure image takes full height of container */
+  object-fit: cover; /* Cover the container while maintaining aspect ratio */
+}

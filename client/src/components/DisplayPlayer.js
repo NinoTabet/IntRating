@@ -248,7 +248,7 @@ const DisplayPlayer = ({playerData}) => {
                 setPlayerProfileData(rawProfileData);
             }else{
                 setPlayerProfileData(rawProfileData.playerProfileData);
-            }
+            };
 
             setRankedSQ(rawProfileData.rankedSQ || null);
             setRankedFQ(rawProfileData.rankedFQ || null);
@@ -326,7 +326,11 @@ const DisplayPlayer = ({playerData}) => {
                                 <div className='h6'>Solo / Duo</div>
                                 {rankedSQ ? (
                                     <>
-                                        <img src='' alt='profile image ' className='profile-pics border border-dark'></img>
+                                        <div className='d-flex justify-content-center'>
+                                            <div className='image-container d-flex justify-content-center align-items-center'>
+                                                <img src={`https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${rankedSQ.player_Tier_SQ.toLowerCase()}.png`} alt='Solo queue rank'></img>
+                                            </div>
+                                        </div>                                        
                                         <div>
                                             <div className="text-center">
                                                 <div className='h3 mb-0'>{rankedSQ.player_Tier_SQ}
@@ -334,7 +338,11 @@ const DisplayPlayer = ({playerData}) => {
                                                 </div>
                                             </div>
                                             <p className='h6 text-secondary'>{rankedSQ.player_LP_SQ}<span> LP</span></p>
-                                            <div className='h6'><span className='text-primary'>{rankedSQ.player_Ranked_Wins_SQ}</span> | <span className='text-danger'>{rankedSQ.player_Ranked_Losses_SQ}</span></div>
+                                            <div className='h6'>
+                                                <span className='text-primary'>{rankedSQ.player_Ranked_Wins_SQ}</span>
+                                                 | 
+                                                <span className='text-danger'>{rankedSQ.player_Ranked_Losses_SQ}</span>
+                                            </div>
                                             <div className='h6 text-secondary'>{rankedSQ.calculated_Player_WR_SQ}%</div>
                                         </div>
                                     </>
@@ -346,7 +354,11 @@ const DisplayPlayer = ({playerData}) => {
                                 <div className='h6'>Flex 5v5</div>
                                 {rankedFQ ? (
                                     <>
-                                        <img src='' alt='profile image ' className='profile-pics border border-dark'></img>
+                                        <div className='d-flex justify-content-center'>
+                                            <div className='image-container d-flex justify-content-center align-items-center'>
+                                                <img src={`https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${rankedFQ.player_Tier_FQ.toLowerCase()}.png`} alt='Flex queue rank'></img>
+                                            </div>
+                                        </div>
                                         <div>
                                             <div className="text-center">
                                                 <div className='h3 mb-0'>{rankedFQ.player_Tier_FQ}
@@ -354,7 +366,11 @@ const DisplayPlayer = ({playerData}) => {
                                                 </div>
                                             </div>
                                             <p className='h6 text-secondary'>{rankedFQ.player_LP_FQ}<span> LP</span></p>
-                                            <div className='h6'><span className='text-primary'>{rankedFQ.player_Ranked_Wins_FQ}</span> | <span className='text-danger'>{rankedFQ.player_Ranked_Losses_FQ}</span></div>
+                                            <div className='h6'>
+                                                <span className='text-primary'>{rankedFQ.player_Ranked_Wins_FQ}</span>
+                                                 | 
+                                                <span className='text-danger'>{rankedFQ.player_Ranked_Losses_FQ}</span>
+                                            </div>
                                             <div className='h6 text-secondary'>{rankedFQ.calculated_Player_WR_FQ}%</div>
                                         </div>
                                     </>
