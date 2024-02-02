@@ -6,7 +6,7 @@ const Footer = () => {
 
     return (
     <div className="text-center p-3">
-        <small> IntRating.net is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.</small>
+        <small> IntRating.net isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</small>
         <div className="bottom-nav d-flex align-items-center justify-content-center mt-2">
             <nav className="navbar bg-light">
                 <ul className="nav">
