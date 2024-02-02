@@ -58,15 +58,6 @@ const Home = ({ setCurrentPage, handleSearchSuccess }) => {
           </div>
         </div>
       </div>
-      <div className="bottom-nav fixed-bottom d-flex align-items-center justify-content-center mb-1">
-      <nav className="navbar bg-light">
-          <ul className="nav">
-            <li className="nav-item"><a href="https://discord.gg/k7CYMXUbTu" className="nav-link text-dark with-border nav-hover-effect" target="_blank" rel="noopener noreferrer">Discord</a></li>
-            <li className="nav-item"><a href="https://www.reddit.com/r/IntRating/" className="nav-link text-dark with-border nav-hover-effect" target="_blank" rel="noopener noreferrer">Reddit</a></li>
-            <li className="nav-item"><a href="https://www.tiktok.com/@coding.with.nino" className="nav-link text-dark nav-hover-effect" target="_blank" rel="noopener noreferrer">TikTok</a></li>
-          </ul>
-        </nav>
-      </div>
     </>
   );
 };
