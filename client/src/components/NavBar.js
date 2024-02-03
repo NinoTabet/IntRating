@@ -23,7 +23,7 @@ const NavBar = ({ currentPage, setCurrentPage, handleSearchSuccess }) => {
 
   return (
     <>
-      <nav className="navbar navbar-dark justify-content-between mb-5 ">
+      <nav className="navbar navbar-dark justify-content-between mb-5">
         <div className="container-fluid">
           <button
             className="navbar-toggler collapsed"
