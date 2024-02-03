@@ -10,6 +10,8 @@ import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
 import Profile from './components/Profile';
 import Footer from './components/Footer';
+import TermsAndConditions from './components/TermsAndConditions';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -43,6 +45,10 @@ const App = () => {
         return <Profile/>
       case 'displayPlayer':
         return <DisplayPlayer playerData={playerData} />;
+      case 'terms':
+        return <TermsAndConditions/>
+      case 'privacy':
+        return <PrivacyPolicy/>
       default:
         return null;
     }
@@ -52,7 +58,7 @@ const App = () => {
       <div>
         <NavBar setCurrentPage={setCurrentPage} handleSearchSuccess={handleSearchSuccess} />
         {renderPage()}
-        <Footer/>
+        <Footer setCurrentPage={setCurrentPage}/>
       </div>
   );
 };

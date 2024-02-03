@@ -8,7 +8,7 @@ const SignUp = ({ setCurrentPage }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmitForm = async (e) => {
+    const onSubmitForm = async (e) => {
       e.preventDefault();
       try {
           const body = { email_address, username, password };
@@ -32,6 +32,14 @@ const SignUp = ({ setCurrentPage }) => {
           alert(err);
       }
   };
+    const handleNavigation = (page) => {
+        console.log('Changing page to', page);
+        try {
+            setCurrentPage(page);   
+        } catch (err) {
+            console.error('Failed to load page: ' + err.message)
+        }
+    }
 
   return (
     <>
@@ -42,7 +50,7 @@ const SignUp = ({ setCurrentPage }) => {
                 <p className='mt-5'>Please include at least one capital letter, one number, and one special character in your password!</p> 
             </div>    
             <div className='text-center container mt-5'>
-                <form onSubmit={onSubmitForm}>
+                <form onSubmit={onSubmitForm} className='mb-3'>
                     <div class="form-group mx-auto w-md-100 w-lg-50">
                     <label for="email">Email address</label>
                     <input type="email" class="form-control text-center" id="email" placeholder="Enter your email" value={email_address}
@@ -60,6 +68,12 @@ const SignUp = ({ setCurrentPage }) => {
                     </div>
                     <button type="submit" class="btn btn-dark mt-5">Signup</button>
                 </form>
+                <small>Please note that by signing up to IntRating.net you agree to our 
+                    <span><a href="#" onClick={() => handleNavigation('terms')} > Terms of Service </a></span>
+                     and 
+                    <span><a href="#" onClick={() => handleNavigation('privacy')}> Privacy Policy</a></span>
+                    .
+                </small>
             </div>
             </div>
         </div>

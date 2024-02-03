@@ -9,8 +9,9 @@ const LoginSignup = ({ currentPage, setCurrentPage }) => {
 
 return (
   <>
-    <div className="container mt-lg-5 middle_page w-50">
-    <h1 className='text-center text-dark'>Signup or Login!</h1>
+    <div className="container mx-auto w-100vw d-flex align-items-center justify-content-center"style={{ height: '75vh' }}>
+      <div>
+        <h1 className='text-center text-dark'>Signup or Login!</h1>
         <div className='text-center mt-5 justify-content-center d-flex'>
             <button
                 type="button"
@@ -23,6 +24,7 @@ return (
                 className={`btn btn-lg btn-light text-dark border border-dark ${currentPage === 'login'}`}
               onClick={() => handleNavigation('login')}>LOG IN
             </button>
+        </div>
         </div>
     </div>
   </>
