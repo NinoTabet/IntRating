@@ -30,9 +30,9 @@ const MatchCard = ({ match }) => {
             <div className="fw-bold">{kda}</div>
             <small className="text-muted">{calculated_kda} KDA</small></div>
           </div>
-        <button onClick={handleClick} className="btn border border-primary bt-sm">
+        {/* <button onClick={handleClick} className="btn border border-primary bt-sm">
           Rate this game
-        </button>
+        </button> */}
       </div>
       <div className="d-flex justify-content-between">
         <div className="col d-flex flex-column align-items-start justify-content-center">
@@ -40,7 +40,7 @@ const MatchCard = ({ match }) => {
           <div className="fw-bold">{game_time}</div>
           <div>
             {items.map((itemNumber, index) => (
-              // Skip rendering if itemNumber is 0
+              // Skips rendering if itemNumber is 0
               itemNumber !== 0 && (
                 <img
                   key={index}
