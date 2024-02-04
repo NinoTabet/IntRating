@@ -102,7 +102,7 @@ const DisplayPlayerReviews = ({ puuid }) => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 p-2">
       <h2 className="mb-5 text-center">Player Reviews</h2>
       <div className="row justify-content-center">
         {data && data.reviews && data.reviews.length > 0 ? (

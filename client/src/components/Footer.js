@@ -12,7 +12,7 @@ const Footer = ({setCurrentPage}) => {
     }
 
     return (
-    <div className="text-center p-3 border">
+    <div className="text-center p-3 border mt-3">
         <small> IntRating.net isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</small>
         <div className="mt-2">
             <small>Please take some time to read our
