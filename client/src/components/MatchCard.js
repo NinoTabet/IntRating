@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import "../MatchCard.css";
 
 const MatchCard = ({ match }) => {
   const handleClick = () => {
@@ -19,22 +19,25 @@ const MatchCard = ({ match }) => {
     most_used_ping,
     total_pings,
     kill_participation,
+    win_verdict,
   } = match;
 
+  // Dynamically determine the background color class
+  const parentBackgroundClass = win_verdict ? "parentWin" : "parentLoss";
+  const childBackgroundClass = win_verdict ? "childWin" : "childLoss";
+
   return (
-    <div className="rounded border border-dark p-1 mb-1">
-      <div className="border-bottom align-items-center d-flex justify-content-between">
+    <div className={`rounded border border-dark p-1 mb-1 ${parentBackgroundClass}`}>
+      <div className={`border-bottom align-items-center d-flex justify-content-between ${parentBackgroundClass}`}>
         <div className="d-flex align-items-center">
-        <img src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${champion_played}.png`} alt='Champion image' className='champion-icon border border-dark me-2 rounded'></img>
+          <img src={`https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${champion_played}.png`} alt='Champion image' className='champion-icon border border-dark me-2 rounded'></img>
           <div className="text-center">
             <div className="fw-bold">{kda}</div>
-            <small className="text-muted">{calculated_kda} KDA</small></div>
+            <small className="text-muted">{calculated_kda} KDA</small>
           </div>
-        {/* <button onClick={handleClick} className="btn border border-primary bt-sm">
-          Rate this game
-        </button> */}
+        </div>
       </div>
-      <div className="d-flex justify-content-between">
+      <div className={`d-flex justify-content-between ${childBackgroundClass}`}>
         <div className="col d-flex flex-column align-items-start justify-content-center">
           <div className="fw-bold">{game_mode}</div>
           <div className="fw-bold">{game_time}</div>

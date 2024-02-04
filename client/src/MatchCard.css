@@ -1,0 +1,12 @@
+.parentWin{
+    background-color: #2469c9;
+}
+.parentLoss{
+    background-color: #de3344;
+}
+.childWin{
+    background-color: #5486cc;
+}
+.childLoss{
+    background-color: #e06773;
+}

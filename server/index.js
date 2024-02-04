@@ -697,7 +697,7 @@ app.get("/riot_api/match_history", async (req, res) => {
 
     // array to store promises for match data
     const matchDataPromises = [];
-
+console.log("entered")
     // loops through the array of gameIds
     for (const gameId of gameIds) {
       matchDataPromises.push(
@@ -715,6 +715,7 @@ app.get("/riot_api/match_history", async (req, res) => {
     // process each API response
     for (const gameStats of gameStatsResponses) {
 
+  
       const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
 
       const player_data = gameStats.data.info.participants[index_puuid];
@@ -730,6 +731,8 @@ app.get("/riot_api/match_history", async (req, res) => {
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
       const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVisionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
       const total_pings = pings.reduce((total, ping) => total + ping, 0); // fix
+
+      const win_verdict = player_data.win;
 
       const maxPingIndex = pings.indexOf(Math.max(...pings));
 
@@ -772,7 +775,8 @@ app.get("/riot_api/match_history", async (req, res) => {
         calculated_kda: calculated_kda, // int - (K+A)/D to 2 decimal places (ex. 7.00)
         items: items, // array - item numbers (ex. [35, 8, 19, ...])
         most_used_ping: most_used_ping,
-        total_pings: total_pings // int - total sum of pings (ex. 82)
+        total_pings: total_pings, // int - total sum of pings (ex. 82)
+        win_verdict: win_verdict // bool - win(true) or loss(false)
       };
 
       matchDataArray.push(matchData);
