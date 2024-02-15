@@ -206,6 +206,8 @@ const DisplayPlayer = ({playerData}) => {
     const [playerProfileData, setPlayerProfileData] = useState(null);
     const [rankedSQ, setRankedSQ] = useState(null);
     const [rankedFQ, setRankedFQ] = useState(null);
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const [matchList, setMatchList] = useState(0);
 
     const [showRankedData, setShowRankedData] = useState(true);
     const [showHistory, setShowHistory] = useState(true);
@@ -217,6 +219,8 @@ const DisplayPlayer = ({playerData}) => {
 
     const updateAndFetchData = async () => {
         try {
+
+            setDataLoaded(false);
 
             // Perform the update (POST request)
             const updateResponse = await fetch(apiUrl + '/api/update-averages', {
@@ -236,34 +240,66 @@ const DisplayPlayer = ({playerData}) => {
                 setUpdatedData(updatedData);
             }
 
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    };
+
+    const fetchMatchHistoryData = async () => {
+        try {
+            console.log ("in: " + matchList);
             const fetchProfileData = fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
-            const fetchMatchHistory = fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}`);
+            const fetchMatchHistory = fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}&matchList=${matchList}`);
             
             // Use Promise.all to make both API calls concurrently
             const [profileDataResponse, matchHistoryResponse] = await Promise.all([fetchProfileData, fetchMatchHistory]);
             
             const rawProfileData = await profileDataResponse.json();
-
+    
             if(!rawProfileData.rankedFQ && !rawProfileData.rankedSQ){
                 setPlayerProfileData(rawProfileData);
             }else{
                 setPlayerProfileData(rawProfileData.playerProfileData);
             };
-
+    
             setRankedSQ(rawProfileData.rankedSQ || null);
             setRankedFQ(rawProfileData.rankedFQ || null);
-
+    
             const matchHistoryData = await matchHistoryResponse.json();
             setMatchHistory(matchHistoryData);
-
-        } catch (error) {
-            console.error('Error:', error);
+            
+            if (matchList === 0){
+                setMatchList(20);
+            }
+            setDataLoaded(true);
+            
+        } catch (err) {
+            console.error('Error', err);
         }
-    };
-
+    }
+    
     useEffect(() => {
         updateAndFetchData();
-    }, [puuid, server_name]); 
+        fetchMatchHistoryData(); // Call fetchMatchHistoryData once on component load
+    }, [puuid, server_name]);
+
+    const handleLoadMore = async () => {
+        try {
+            setDataLoaded(false);
+            const newMatchHistoryResponse = await fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}&matchList=${matchList}`);
+            const newMatchHistoryData = await newMatchHistoryResponse.json();
+    
+            // Update MatchHistory state with the newly fetched matches appended to the existing ones
+            setMatchHistory(prevMatchHistory => [...prevMatchHistory, ...newMatchHistoryData]);
+    
+            // Increment the matchList for the next fetch
+            setMatchList(prevMatchList => prevMatchList + 20);
+            setDataLoaded(true);
+        } catch (error) {
+            console.error('Error fetching match history:', error);
+        }
+    };
+    
 /*
     const formatElapsedTime = (timestamp) => {
         if (!timestamp) {
@@ -474,6 +510,11 @@ const DisplayPlayer = ({playerData}) => {
                 ))
                 )}
                 {MatchHistory && MatchHistory.length === 0 && <p>No match history available.</p>}
+                {dataLoaded && (
+                    <div className="text-center">
+                        <button className="btn btn-success" onClick={handleLoadMore}>LOAD MORE</button>
+                    </div>
+                )}
             </div>
         </div>
       ):(

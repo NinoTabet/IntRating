@@ -679,7 +679,9 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // collects 20 games of match history and responds with relevant data in the form of an object called - matchData
 app.get("/riot_api/match_history", async (req, res) => {
 
-  const { puuid, server_name } = req.query;
+  const { puuid, server_name, matchList } = req.query;
+
+  console.log(matchList);
 
   try {
     const regionCollection = await pool.query(
@@ -690,14 +692,14 @@ app.get("/riot_api/match_history", async (req, res) => {
     const region = regionCollection.rows[0].region;
 
     // collects recent 20 game match history
-    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${RIOT_API}`);
+    const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${matchList}&count=20&api_key=${RIOT_API}`);
 
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
 
     // array to store promises for match data
     const matchDataPromises = [];
-console.log("entered")
+    console.log("entered");
     // loops through the array of gameIds
     for (const gameId of gameIds) {
       matchDataPromises.push(
