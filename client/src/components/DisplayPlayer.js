@@ -247,7 +247,6 @@ const DisplayPlayer = ({playerData}) => {
 
     const fetchMatchHistoryData = async () => {
         try {
-            console.log ("in: " + matchList);
             const fetchProfileData = fetch(apiUrl + `/riot_api/player_profile?puuid=${puuid}&server_name=${server_name}`);
             const fetchMatchHistory = fetch(apiUrl + `/riot_api/match_history?puuid=${puuid}&server_name=${server_name}&matchList=${matchList}`);
             
