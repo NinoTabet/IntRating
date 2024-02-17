@@ -681,8 +681,6 @@ app.get("/riot_api/match_history", async (req, res) => {
 
   const { puuid, server_name, matchList } = req.query;
 
-  console.log(matchList);
-
   try {
     const regionCollection = await pool.query(
       "SELECT region FROM server WHERE server_name = ($1)",
@@ -699,7 +697,6 @@ app.get("/riot_api/match_history", async (req, res) => {
 
     // array to store promises for match data
     const matchDataPromises = [];
-    console.log("entered");
     // loops through the array of gameIds
     for (const gameId of gameIds) {
       matchDataPromises.push(
@@ -716,7 +713,6 @@ app.get("/riot_api/match_history", async (req, res) => {
 
     // process each API response
     for (const gameStats of gameStatsResponses) {
-
   
       const index_puuid = gameStats.data.metadata.participants.indexOf(puuid);
 
@@ -731,7 +727,7 @@ app.get("/riot_api/match_history", async (req, res) => {
       const game_time = secondsToMinutesAndSeconds(gameStats.data.info.gameDuration);
       const minions_pm = (minion_kills/(gameStats.data.info.gameDuration/60)).toFixed(1);
       const items = [player_data.item0, player_data.item1, player_data.item2, player_data.item3, player_data.item4, player_data.item5, player_data.item6 ]
-      const pings = [player_data.allInPings, player_data.assistMePings, player_data.baitPings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVisionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
+      const pings = [player_data.allInPings, player_data.assistMePings, player_data.basicPings, player_data.commandPings, player_data.dangerPings, player_data.enemyMissingPings, player_data.enemyVisionPings, player_data.getBackPings, player_data.holdPings, player_data.needVisionPings, player_data.onMyWayPings, player_data.pushPings, player_data.visionClearedPings]
       const total_pings = pings.reduce((total, ping) => total + ping, 0); // fix
 
       const win_verdict = player_data.win;
@@ -741,7 +737,6 @@ app.get("/riot_api/match_history", async (req, res) => {
       const pingTypes = [
         'All In',
         'Assist Me',
-        'Bait',
         'Basic',
         'Command',
         'Danger',
@@ -762,8 +757,8 @@ app.get("/riot_api/match_history", async (req, res) => {
       const player_team_kills = player_team_Id.reduce((total, player) => total + player.kills, 0);
       const kill_participation = (((player_data.kills + player_data.assists) / player_team_kills) * 100).toFixed(0); // fix
 
-      // TODO participants is tbd on if I send an array or just an obj !!!!!!!!!!!!!!!!!!!!!!!!!!!!
       const participants = [player_data.riotIdName]; // fix
+
       const matchData = {
         kda: kda, // int - K/D/A (ex. 7/2/12)
         champion_played: champion_played, // string - character name (ex. Gangplank)
