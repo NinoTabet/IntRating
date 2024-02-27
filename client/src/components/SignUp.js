@@ -61,11 +61,9 @@ const SignUp = ({ setCurrentPage }) => {
               <button type="submit" className="btn btn-dark mt-5">Signup</button>
             </form>
             <small>
-              Please note that by signing up to IntRating.net you agree to our
-              <span><Link className="link-button" onClick={() => navigate('/terms')}> Terms of Service </Link></span>
-              and
-              <span><Link className="link-button" onClick={() => navigate('/privacy')}> Privacy Policy</Link></span>
-              .
+              Please note that by signing up to IntRating.net you agree to our{' '}
+              <Link to="/terms">Terms of Service</Link> and{' '}
+              <Link to="/privacy">Privacy Policy</Link>.
             </small>
           </div>
         </div>

@@ -67,7 +67,7 @@ const NavBar = () => {
             )}
             <li className="nav-item">
               <NavLink
-                to="/contact"
+                to="/feedback"
                 className="nav-link px-2 text-light"
                 activeClassName="link-secondary"
               >
