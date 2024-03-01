@@ -1,14 +1,18 @@
-// SearchBar.js
+// Inside the SearchBar component
+
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import ServerListNames from "./ServerListNames";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const SearchBar = ({ handleSearchSuccess }) => {
+const SearchBar = () => {
   const [full_username, setFull_Username] = useState("");
   const [selectedServer, setSelectedServer] = useState("Server");
   const [gameName, setGameName] = useState("");
   const [tagLine, setTagLine] = useState("");
+  const [playerData, setPlayerData] = useState(null); // State to store player data
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,12 +26,15 @@ const SearchBar = ({ handleSearchSuccess }) => {
           headers: { "Content-Type": "application/json" },
         });
 
-        if (response.ok) {
+        if (response.ok) { 
           const data = await response.json();
-          handleSearchSuccess(data);
+          // Construct the query string from the parameters
+          const queryString = `?gameName=${data.gameName}&tagLine=${data.tagLine}&server_name=${data.server_name}&puuid=${data.puuid}`;
+          // Navigate to the DisplayPlayer component with the query parameters
+          navigate(`/displayPlayer${queryString}`);
         } else {
           alert(
-            "Player not found in database. Be the first to rate " +
+            "Player not found. Be sure to add the player's tagline." +
               full_username +
               "!"
           );
@@ -42,7 +49,7 @@ const SearchBar = ({ handleSearchSuccess }) => {
       setGameName("");
       setTagLine("");
     }
-  }, [gameName, tagLine, selectedServer, full_username]);
+  }, [gameName, tagLine, selectedServer, full_username, navigate]);
 
   const onSubmitForm = (e) => {
     e.preventDefault();
