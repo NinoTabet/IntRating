@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import "../DisplayPlayer.css";
 import DisplayPlayerReviews from "./DisplayPlayerReviews";
 import MatchCard from "./MatchCard";
+import { useLocation } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const DisplayPlayer = ({playerData}) => {
+const DisplayPlayer = () => {
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
 
     const generateSectionRating = (score, attributeType) => {
         if(attributeType === 'csing') {
@@ -199,7 +203,16 @@ const DisplayPlayer = ({playerData}) => {
     return { stars: ' ', text: ' ' };
     }
 };
-    const { puuid, gameName, tagLine, server_name } = playerData;
+
+    const puuid = searchParams.get('puuid');
+    const gameName = searchParams.get('gameName');
+    const tagLine = searchParams.get('tagLine');
+    const server_name = searchParams.get('server_name');
+
+    console.log('PUUID:', puuid);
+    console.log('Game Name:', gameName);
+    console.log('Tag Line:', tagLine);
+    console.log('Server Name:', server_name);
 
     const [updatedData, setUpdatedData] = useState(null);
     const [MatchHistory, setMatchHistory] = useState(null);

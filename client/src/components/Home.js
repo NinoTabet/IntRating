@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import "../Main.css";
+import { useNavigate } from 'react-router-dom';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const Home = ({ setCurrentPage, handleSearchSuccess }) => {
   const [latestRatingId, setLatestRatingId] = useState(null);
   const jwtAuthorization = document.cookie.includes("jwt_authorization");
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchLatestRatingId = async () => {
       try {
@@ -48,7 +50,7 @@ const Home = ({ setCurrentPage, handleSearchSuccess }) => {
           <button
             type="button"
             className="btn btn-lg btn-dark text-light mt-sm-5"
-            onClick={handleContributeClick}
+            onClick={() => navigate('/contribute')}
           >
             Contribute rating
           </button>

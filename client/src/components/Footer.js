@@ -1,25 +1,15 @@
 import "../Main.css";
+import { Link } from 'react-router-dom'; // Import useNavigate
 
-const Footer = ({setCurrentPage}) => {
-
-    const handleNavigation = (page) => {
-        console.log('Changing page to', page);
-        try {
-            setCurrentPage(page);   
-        } catch (err) {
-            console.error('Failed to load page: ' + err.message)
-        }
-    }
+const Footer = () => {
 
     return (
     <div className="text-center p-3 border mt-3">
         <small> IntRating.net isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</small>
         <div className="mt-2">
-            <small>Please take some time to read our
-                <span><a href="#" onClick={() => handleNavigation('terms')} > Terms of Service </a></span>
-                    and 
-                <span><a href="#" onClick={() => handleNavigation('privacy')}> Privacy Policy</a></span>
-                .
+            <small>Please take some time to read our{' '}
+              <Link to="/terms">Terms of Service</Link> and{' '}
+              <Link to="/privacy">Privacy Policy</Link>.
             </small>
         </div>
         <div className="bottom-nav d-flex align-items-center justify-content-center mt-2">

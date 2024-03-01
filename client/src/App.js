@@ -1,9 +1,9 @@
-// App.js
-import React, { useState } from 'react';
-import Home from './components/Home';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
+import Home from './components/Home';
 import Contribute from './components/Contribute';
-import Contact from './components/Contact';
+import Feedback from './components/Feedback';
 import DisplayPlayer from './components/DisplayPlayer';
 import LoginSignup from './components/LoginSignup';
 import LogIn from './components/LogIn';
@@ -14,52 +14,25 @@ import TermsAndConditions from './components/TermsAndConditions';
 import PrivacyPolicy from './components/PrivacyPolicy';
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [submissionSuccess, setSubmissionSuccess] = useState(false);
-  const [playerData, setPlayerData] = useState(null);
-
-  const handleContributeClick = () => {
-    setCurrentPage('contribute');
-    setSubmissionSuccess(false);
-  };
-  const handleSearchSuccess = (data) => {
-    setCurrentPage('displayPlayer');
-    setPlayerData(data);
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <Home setCurrentPage={setCurrentPage} handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
-      case 'contribute':
-        return <Contribute handleContributeClick={handleContributeClick} handleSearchSuccess={handleSearchSuccess} />;
-      case 'contact':
-        return <Contact />;
-      case 'loginsignup':
-        return <LoginSignup setCurrentPage={setCurrentPage}/>;
-      case 'login':
-        return <LogIn setCurrentPage={setCurrentPage}/>;
-      case 'signup':
-        return <SignUp setCurrentPage={setCurrentPage}/>;
-      case 'profile':
-        return <Profile/>
-      case 'displayPlayer':
-        return <DisplayPlayer playerData={playerData} />;
-      case 'terms':
-        return <TermsAndConditions/>
-      case 'privacy':
-        return <PrivacyPolicy/>
-      default:
-        return null;
-    }
-  };
-
   return (
+    <Router>
       <div>
-        <NavBar setCurrentPage={setCurrentPage} handleSearchSuccess={handleSearchSuccess} />
-        {renderPage()}
-        <Footer setCurrentPage={setCurrentPage}/>
+        <NavBar /> 
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/contribute" element={<Contribute />} />
+          <Route path="/feedback" element={<Feedback />} />
+          <Route path="/loginsignup" element={<LoginSignup />} />
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/displayPlayer" element={<DisplayPlayer />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+        </Routes>
+        <Footer />
       </div>
+    </Router>
   );
 };
 

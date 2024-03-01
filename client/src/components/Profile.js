@@ -52,7 +52,6 @@ const Profile = () => {
       <div className='mt-5 card-container mx-auto' style={{ maxHeight: '500px', overflowY: 'auto' }}>
         {reviewList && reviewList.reverse().map((review, index) => (
           <div key={review.rating_id} className="mb-3">
-            {/* Pass the corresponding playerNames for each review */}
             <Review review={review} playerNames={playerNames[index]} />
           </div>
         ))}
