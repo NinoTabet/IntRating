@@ -204,7 +204,7 @@ app.get("/profile", verifyToken, async (req, res) => {
     const reviewSearch = await pool.query("SELECT * FROM ratings WHERE user_id = ($1) ORDER BY rating_id ASC", [userId]);
 
     const playerIds = reviewSearch.rows.map((review) => review.player_id).sort((a, b) => a - b);
-    console.log(playerIds);
+    console.log('playerIds: '+playerIds);
     const usernameSearch = await pool.query("SELECT username FROM user_accounts WHERE user_id = $1", [userId]);
     if (playerIds.length === 0) {
       const responseData = {
@@ -242,8 +242,10 @@ app.get("/profile", verifyToken, async (req, res) => {
     
     const playerNamesPromises = [];
 
+    console.log("pre api call")
     for (const { puuid } of puuidCollection.rows) {
       try {
+        console.log("entered")
         // Push the promise to fetch the Riot API data into playerNamesPromises
         playerNamesPromises.push(
           axios.get(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`)
@@ -259,8 +261,6 @@ app.get("/profile", verifyToken, async (req, res) => {
 
     // Map puuids to gameNames
     const playerNames = playerNamesResponse.map((response) => response.data.gameName).reverse();
-
-    console.log(playerNames);
     const responseData = {
       reviewSearch: reviewSearch.rows,
       playerNames,
@@ -688,10 +688,11 @@ app.get("/riot_api/match_history", async (req, res) => {
     );
 
     const region = regionCollection.rows[0].region;
-
+    console.log('puuid: '+puuid);
     // collects recent 20 game match history
     const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${matchList}&count=20&api_key=${RIOT_API}`);
-
+    console.log('game response: '+gamesResponse);
+    // console.log(gamesResponse);
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
 
@@ -699,12 +700,15 @@ app.get("/riot_api/match_history", async (req, res) => {
     const matchDataPromises = [];
     // loops through the array of gameIds
     for (const gameId of gameIds) {
+
       matchDataPromises.push(
         axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
       );
+
+      // console.log(axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`));
       await sleep(100);
     }
-
+  
     // use Promise.all to wait for all API calls to complete
     const gameStatsResponses = await Promise.all(matchDataPromises);
 
