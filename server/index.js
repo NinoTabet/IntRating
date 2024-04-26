@@ -691,11 +691,11 @@ app.get("/riot_api/match_history", async (req, res) => {
     console.log('puuid: '+puuid);
     // collects recent 20 game match history
     const gamesResponse = await axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${matchList}&count=20&api_key=${RIOT_API}`);
-    console.log('game response: '+gamesResponse);
+    
     // console.log(gamesResponse);
     // set's local gameIds to the data received from gamesResponse (array of game ids)
     const gameIds = gamesResponse.data;
-
+    console.log('game response: '+gamesResponse.data);
     // array to store promises for match data
     const matchDataPromises = [];
     // loops through the array of gameIds
@@ -705,13 +705,14 @@ app.get("/riot_api/match_history", async (req, res) => {
         axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`)
       );
 
-      // console.log(axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`));
+      const ere = axios.get(`https://${region}.api.riotgames.com/lol/match/v5/matches/${gameId}?api_key=${RIOT_API}`);
+      console.log('ere: '+ere);
       await sleep(100);
     }
   
     // use Promise.all to wait for all API calls to complete
     const gameStatsResponses = await Promise.all(matchDataPromises);
-
+    console.log("gameStatsResponses: " + gameStatsResponses);
     // array to store match data for each game
     const matchDataArray = [];
 
@@ -785,6 +786,7 @@ app.get("/riot_api/match_history", async (req, res) => {
     }
 
     // Send the array of match data once after the loop is completed
+    // console.log(matchDataArray)
     console.log("match_history completed successfully!")
     res.json(matchDataArray);
 
