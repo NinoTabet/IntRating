@@ -12,12 +12,14 @@ import Profile from './components/Profile';
 import Footer from './components/Footer';
 import TermsAndConditions from './components/TermsAndConditions';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import GoogleAd from './components/GoogleAd';
 
 const App = () => {
   return (
     <Router>
       <div>
         <NavBar /> 
+        <GoogleAd />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/contribute" element={<Contribute />} />
