@@ -519,7 +519,7 @@ app.post("/signup", async (req, res) => {
       "SELECT email FROM user_accounts WHERE email = LOWER($1)",
       [email_address]
     );
-
+    
     // checks if account with provided username was provided already exists
     const accountUsernameCheck = await pool.query(
       "SELECT lower_username FROM user_accounts WHERE username = LOWER($1)",
@@ -625,21 +625,18 @@ app.get("/riot_api/player_profile", async (req, res) => {
     const flexQ = playerRankedData.data.findIndex(entry => entry.queueType === "RANKED_FLEX_SR");
 
     if(soloQ<0 && flexQ<0){
-      res.json(playerProfileData);
-      return;
+      return res.json(playerProfileData);
+      
     }else if(soloQ<0 && flexQ>=0){
       const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
-      res.json({rankedFQ, playerProfileData});
-      return;
+      return res.json({rankedFQ, playerProfileData});
     }else if(soloQ>=0 && flexQ<0){
       const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
-      res.json({rankedSQ, playerProfileData});
-      return;
+      return res.json({rankedSQ, playerProfileData});
     }else{
       const rankedFQ = rankedDataFQ(playerRankedData, flexQ);
       const rankedSQ = rankedDataSQ(playerRankedData, soloQ);
       res.json({rankedSQ, rankedFQ, playerProfileData});
-      return;
     }
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error' });
